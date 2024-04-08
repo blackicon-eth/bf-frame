@@ -23,9 +23,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     }
   );
 
-  // if (frameMessage && !frameMessage?.isValid) {
-  //   throw new Error("Invalid frame payload");
-  // }
+  if (frameMessage && !frameMessage?.isValid) {
+    throw new Error("Invalid frame payload");
+  }
 
   const frameCallerUsername = frameMessage?.requesterUserData?.username!;
   const frameCallerProfileImage = frameMessage?.requesterUserData?.profileImage!;
