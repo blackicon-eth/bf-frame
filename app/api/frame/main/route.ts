@@ -23,8 +23,10 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     }
   );
 
-  if (frameMessage && !frameMessage?.isValid) {
-    throw new Error("Invalid frame payload");
+  if (!process.env.NEXT_PUBLIC_BASE_URL || !process.env.NEXT_PUBLIC_BASE_URL.includes("localhost")) {
+    if (frameMessage && !frameMessage?.isValid) {
+      throw new Error("Invalid frame payload");
+    }
   }
 
   const frameCallerUsername = frameMessage?.requesterUserData?.username!;
