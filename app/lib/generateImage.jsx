@@ -81,6 +81,8 @@ export async function generateFriendImage(callerUsername, callerPropic) {
   const outputPath = join(process.cwd(), "public/frames/test.png");
   const sharpBuffer = sharp(Buffer.from(svg)).toFormat("png");
 
-  await sharpBuffer.toFile(outputPath);
+  if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.includes("localhost")) {
+    await sharpBuffer.toFile(outputPath);
+  }
   return await sharpBuffer.toBuffer();
 }
