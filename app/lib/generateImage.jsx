@@ -35,12 +35,14 @@ const gothamBoldItalicData = readFileSync(gothamBoldItalic);
 
 export async function generateFriendImage(callerUsername, callerPropic) {
   var friendPropic;
+  var friendName;
+
   try {
     const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=2", [callerUsername]);
     const promises = response.data.result.map(async (element) => {
-      if (element.fname !== callerUsername) {
-        const name = element.fname;
-        const { data, error } = await fetchQuery(query, { fname: name });
+      if (element.fname !== callerUsername && friendName == null) {
+        friendName = element.fname;
+        const { data, error } = await fetchQuery(query, { fname: friendName });
         if (data.Socials.Social) {
           friendPropic = data.Socials.Social[0].profileImageContentValue.image.small;
         } else if (error) {
@@ -57,12 +59,12 @@ export async function generateFriendImage(callerUsername, callerPropic) {
     <div style={{ ...style.background, backgroundColor: "#7e5bc0" }}>
       <div style={style.friendContainer}>
         <img src={callerPropic} style={style.imageFriend} />
-        <span tw={style.twFriendName}>blackicon.eth</span>
+        <span tw={style.twFriendName}>{callerUsername}</span>
       </div>
 
       <div style={style.friendContainer}>
         <img src={friendPropic} style={style.imageFriend} />
-        <span tw={style.twFriendName}>limone.eth</span>
+        <span tw={style.twFriendName}>{friendName}</span>
       </div>
     </div>,
     {
@@ -76,5 +78,9 @@ export async function generateFriendImage(callerUsername, callerPropic) {
       ],
     }
   );
-  return await sharp(Buffer.from(svg)).toFormat("png").toBuffer();
+  const outputPath = join(process.cwd(), "public/frames/test.png");
+  const sharpBuffer = sharp(Buffer.from(svg)).toFormat("png");
+
+  await sharpBuffer.toFile(outputPath);
+  return await sharpBuffer.toBuffer();
 }
