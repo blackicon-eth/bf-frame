@@ -2,96 +2,79 @@ import satori from "satori";
 import { readFileSync } from "fs";
 import { join } from "path";
 import * as style from "./style_components/styles";
-import fs from "fs";
-import path from "path";
 import sharp from "sharp";
+import axios from "axios";
+import { init, fetchQuery } from "@airstack/node";
+
+init(process.env.AIRSTACK_KEY);
+
+const query = `query GetPropicsQuery($fname: String) {
+  Socials(
+    input: {
+      filter: {
+        profileName: { _eq: $fname }
+        dappName: { _eq: farcaster }
+      }
+      blockchain: ethereum
+    }
+  ) {
+    Social {
+      profileImage
+      profileImageContentValue {
+        image {
+          small
+        }
+      }
+    }
+  }
+}`;
 
 // Loading fonts
 const gothamBoldItalic = join(process.cwd(), "public/fonts/GothamBoldItalic.ttf");
 const gothamBoldItalicData = readFileSync(gothamBoldItalic);
 
-export async function localImageToFrame(event, value) {
-  // creating image for calculated bmi
-  if (event == "bmi") {
-    const imagePath = path.join(process.cwd(), "public/frames/bmi_result.jpg");
-    const buffer = fs.readFileSync(imagePath);
-    const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-
-    const svg = await satori(
-      <body>
-        <img src={arrayBuffer} style={style.image} />
-        <span style={style.bmiText}>{value}</span>
-      </body>,
-      {
-        width: 1910,
-        height: 1000,
-        fonts: [
-          {
-            data: gothamBoldItalicData,
-            name: "GothamBoldItalic",
-          },
-        ],
+export async function generateFriendImage(callerUsername, callerPropic) {
+  var friendPropic;
+  try {
+    const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=2", [callerUsername]);
+    const promises = response.data.result.map(async (element) => {
+      if (element.fname !== callerUsername) {
+        const name = element.fname;
+        const { data, error } = await fetchQuery(query, { fname: name });
+        if (data.Socials.Social) {
+          friendPropic = data.Socials.Social[0].profileImageContentValue.image.small;
+        } else if (error) {
+          console.log("error:", error);
+        }
       }
-    );
-    return await sharp(Buffer.from(svg)).toFormat("png").toBuffer();
+    });
+    await Promise.all(promises);
+  } catch (error) {
+    console.error(error);
   }
 
-  // creating image for calculated bf
-  else if (event == "bf") {
-    const imagePath = path.join(process.cwd(), "public/frames/bf_result.jpg");
-    const buffer = fs.readFileSync(imagePath);
-    const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+  const svg = await satori(
+    <div style={{ ...style.background, backgroundColor: "#7e5bc0" }}>
+      <div style={style.friendContainer}>
+        <img src={callerPropic} style={style.imageFriend} />
+        <span tw={style.twFriendName}>blackicon.eth</span>
+      </div>
 
-    const svg = await satori(
-      <body>
-        <img src={arrayBuffer} style={style.image} />
-        <span style={style.bfText}>{value}</span>
-      </body>,
-      {
-        width: 1910,
-        height: 1000,
-        fonts: [
-          {
-            data: gothamBoldItalicData,
-            name: "GothamBoldItalic",
-          },
-        ],
-      }
-    );
-    return await sharp(Buffer.from(svg)).toFormat("png").toBuffer();
-  }
-
-  // creating image for calories count
-  else if (event == "cc") {
-    const weightLoss = (parseInt(value) - 500).toString();
-    const mildWeightLoss = (parseInt(value) - 250).toString();
-    const weightGain = (parseInt(value) + 500).toString();
-    const mildWeightGain = (parseInt(value) + 250).toString();
-
-    const imagePath = path.join(process.cwd(), "public/frames/cc_result.jpg");
-    const buffer = fs.readFileSync(imagePath);
-    const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-
-    const svg = await satori(
-      <body>
-        <img src={arrayBuffer} style={style.genericImage} />
-        <span style={style.ccTextWeightGain}>{weightGain}</span>
-        <span style={style.ccTextMildWeightGain}>{mildWeightGain}</span>
-        <span style={style.ccTextWeight}>{value}</span>
-        <span style={style.ccTextMildWeightLoss}>{mildWeightLoss}</span>
-        <span style={style.ccTextWeightLoss}>{weightLoss}</span>
-      </body>,
-      {
-        width: 1910,
-        height: 1000,
-        fonts: [
-          {
-            data: gothamBoldItalicData,
-            name: "GothamBoldItalic",
-          },
-        ],
-      }
-    );
-    return await sharp(Buffer.from(svg)).toFormat("png").toBuffer();
-  }
+      <div style={style.friendContainer}>
+        <img src={friendPropic} style={style.imageFriend} />
+        <span tw={style.twFriendName}>limone.eth</span>
+      </div>
+    </div>,
+    {
+      width: 1910,
+      height: 1000,
+      fonts: [
+        {
+          data: gothamBoldItalicData,
+          name: "GothamBoldItalic",
+        },
+      ],
+    }
+  );
+  return await sharp(Buffer.from(svg)).toFormat("png").toBuffer();
 }

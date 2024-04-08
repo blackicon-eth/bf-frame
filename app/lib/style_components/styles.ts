@@ -1,87 +1,34 @@
-export const image = {
+export const frontImage = {
   width: "1910px",
   height: "1000px",
 };
 
-export const bmiText = {
+export const background = {
   display: "flex",
-  fontFamily: "ComicSansMS",
-  fontSize: "250px",
+  flexDirection: "row",
+  gap: "-30",
+  height: "100%",
+  width: "100%",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 60,
+  letterSpacing: -2,
+  fontWeight: 700,
   textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "350",
-  left: "788",
 };
 
-export const bfText = {
-  display: "flex",
-  fontFamily: "ComicSansMS",
-  fontSize: "290px",
-  textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "320",
-  left: "730",
-};
-
-export const ccDiv = {
+export const friendContainer = {
   display: "flex",
   flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "40",
 };
 
-export const ccTextWeightGain = {
-  display: "flex",
-  flexDirection: "column",
-  fontFamily: "ComicSansMS",
-  fontSize: "85px",
-  textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "225",
-  left: "830",
+export const imageFriend = {
+  height: "700",
+  width: "700",
+  borderRadius: "100%",
 };
 
-export const ccTextMildWeightGain = {
-  display: "flex",
-  fontFamily: "ComicSansMS",
-  fontSize: "85px",
-  textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "317",
-  left: "830",
-};
-
-export const ccTextWeight = {
-  display: "flex",
-  fontFamily: "ComicSansMS",
-  fontSize: "85px",
-  textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "410",
-  left: "830",
-};
-
-export const ccTextMildWeightLoss = {
-  display: "flex",
-  fontFamily: "ComicSansMS",
-  fontSize: "85px",
-  textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "502",
-  left: "830",
-};
-
-export const ccTextWeightLoss = {
-  display: "flex",
-  fontFamily: "ComicSansMS",
-  fontSize: "85px",
-  textAlign: "center",
-  color: "#fff",
-  position: "absolute",
-  bottom: "595",
-  left: "830",
-};
+export const twFriendName = "flex rounded-3xl bg-white p-16 pb-6";
