@@ -5,7 +5,7 @@ export const frontImage = {
 
 export const background = {
   display: "flex",
-  flexDirection: "row",
+  flexDirection: "column",
   gap: "-30",
   height: "100%",
   width: "100%",
@@ -14,7 +14,13 @@ export const background = {
   fontSize: 60,
   letterSpacing: -2,
   fontWeight: 700,
-  textAlign: "center",
+};
+
+export const mainContainer = {
+  display: "flex",
+  flexDirection: "row",
+  gap: "-30",
+  marginBottom: "100px",
 };
 
 export const friendContainer = {
@@ -22,13 +28,25 @@ export const friendContainer = {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  gap: "40",
+  position: "relative", // Add this line
 };
 
 export const imageFriend = {
-  height: "700",
-  width: "700",
+  height: "650",
+  width: "650",
   borderRadius: "100%",
 };
 
-export const twFriendName = "flex rounded-3xl bg-white p-16 pb-6";
+export const logo = {
+  width: "90px",
+  height: "90px",
+  position: "absolute",
+  left: "695",
+  bottom: "280",
+};
+
+export const date = { position: "absolute", left: "-17", bottom: "-18" };
+
+export const mainText = "text-[65px] pb-22 text-white";
+export const twFriendName = "flex rounded-3xl bg-white p-15 pb-5 absolute -bottom-26";
+export const twDate = "flex justify-start items-start text-[27px] text-white flex rounded-xl bg-black p-9";

@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getInvalidFIDFrame } from "@/app/lib/getFrame";
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
 import { getFrameMessage } from "frames.js";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
-  // Getting the user fid and validating it
+  // Getting the user data and validating it
   const data = await req.json();
-  const fid = data.untrustedData.fid;
-  if (!fid && isNaN(fid) && parseInt(fid) < 0) {
-    return getInvalidFIDFrame();
-  }
 
   const frameMessage = await getFrameMessage(
     { trustedData: data.trustedData, untrustedData: data.untrustedData },
