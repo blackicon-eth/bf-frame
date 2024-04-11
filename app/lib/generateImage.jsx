@@ -36,33 +36,44 @@ const gothamBoldItalicData = readFileSync(gothamBoldItalic);
 export async function generateFriendImage(callerUsername, callerPropic) {
   var friendPropic;
   var friendName;
-  var friendFID;
 
-  try {
-    const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=2", [callerUsername]);
-    const promises = response.data.result.map(async (element) => {
-      if (element.fname !== callerUsername && friendName == null) {
-        friendName = element.fname;
-        friendFID = element.fid;
+  // Get friend's name and propic through API calls
+  if (callerUsername && callerPropic && false) {
+    console.log("callerUsername:", callerUsername);
+    console.log("callerPropic:", callerPropic);
+    try {
+      const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
+      console.log("response:", response.data.result);
+      if (response.data.result[0]) {
+        const element = response.data.result[0];
+        friendName = element.fname.toString();
         const { data, error } = await fetchQuery(query, { fname: friendName });
         if (data.Socials.Social) {
-          friendPropic = data.Socials.Social[0].profileImageContentValue.image.small;
+          friendPropic = data.Socials.Social[0].profileImage;
         } else if (error) {
           console.log("error:", error);
         }
       }
-    });
-    await Promise.all(promises);
-  } catch (error) {
-    console.error(error);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
+  console.log("friendName:", friendName);
+  console.log("friendPropic:", friendPropic);
+
+  // Get current date to show on the image
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString();
 
+  // Generate the image with Satori
   const svg = await satori(
     <div style={{ ...style.background, backgroundColor: "#7e5bc0" }}>
-      <span tw={style.mainText}>It looks like you two are Farcaster best friends!</span>
+      <span tw={style.mainText}>
+        {friendName == callerUsername
+          ? "Your best friend is... yourself?!"
+          : "It looks like you two are Farcaster best friends!"}
+      </span>
       <div style={style.mainContainer}>
         <div style={style.friendContainer}>
           {callerPropic ? (
@@ -71,7 +82,7 @@ export async function generateFriendImage(callerUsername, callerPropic) {
             <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
           )}
 
-          <span tw={style.twFriendName}>{callerUsername}</span>
+          <span tw={style.twFriendName}>{callerUsername ? callerUsername : "Not found..."}</span>
         </div>
 
         <div style={style.friendContainer}>
@@ -80,7 +91,7 @@ export async function generateFriendImage(callerUsername, callerPropic) {
           ) : (
             <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
           )}
-          <span tw={style.twFriendName}>{friendName}</span>
+          <span tw={style.twFriendName}>{friendName ? friendName : "Not found..."}</span>
         </div>
       </div>
       <span tw={style.twDate} style={style.date}>
@@ -101,6 +112,7 @@ export async function generateFriendImage(callerUsername, callerPropic) {
   const outputPath = join(process.cwd(), "public/frames/test.png");
   const sharpBuffer = sharp(Buffer.from(svg)).toFormat("png");
 
+  // Save the image to the file system if we are running locally
   if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.includes("localhost")) {
     await sharpBuffer.toFile(outputPath);
   }

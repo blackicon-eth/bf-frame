@@ -28,7 +28,7 @@ export const friendContainer = {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  position: "relative", // Add this line
+  position: "relative",
 };
 
 export const imageFriend = {
