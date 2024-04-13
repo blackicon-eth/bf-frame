@@ -37,7 +37,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       {
         label: "Mint for me",
         action: "tx",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?number=1`,
+        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint`,
         //postUrl: "",
       },
       {

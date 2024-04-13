@@ -2,12 +2,46 @@ import { FrameRequest, FrameValidationData } from "@coinbase/onchainkit";
 import { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { getFrameMessage } from "frames.js";
 import { NextRequest, NextResponse } from "next/server";
-import { encodeFunctionData, parseGwei } from "viem";
+import { Address, encodeFunctionData, parseGwei } from "viem";
 import { base, baseSepolia } from "viem/chains";
+import { FarcasterBestFriendsABI } from "@/app/lib/abi/FarcasterBestFriendsABI";
+import { ethers } from "ethers";
 
 const getFarcasterAccountAddress = (interactor: FrameValidationData["interactor"]) => {
   // Get the first verified account or the custody address
   return interactor.verified_accounts[0] ?? interactor.custody_address;
+};
+
+const SIGNING_DOMAIN_NAME = "Voucher-Domain";
+const SIGNING_DOMAIN_VERSION = "1";
+const chainId = baseSepolia.id;
+
+const domain = {
+  name: SIGNING_DOMAIN_NAME,
+  version: SIGNING_DOMAIN_VERSION,
+  verifyingContract: "0xfC8Bcec7118CAd2E86cDf7f36A13f79324f743fE", // The contract address deployed on Base Sepolia
+  chainId,
+};
+
+const approve = async (uri: string, minter: Address, friend: Address) => {
+  const voucher = { uri, minter, friend };
+
+  const types = {
+    Voucher: [
+      { name: "uri", type: "string" },
+      { name: "minter", type: "address" },
+      { name: "friend", type: "address" },
+    ],
+  };
+
+  try {
+    const signer = new ethers.Wallet(process.env.PRIVATE_KEY! as Address);
+    const signature = await signer.signTypedData(domain, types, voucher);
+
+    return signature as Address;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
@@ -17,7 +51,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   console.log("body", body);
 
   // Getting the number on mints from the nextUrl
-  const number = req.nextUrl.searchParams.get("number")!;
+  const friendAddress: Address = req.nextUrl.searchParams.get("friendAddress")! as Address;
 
   // Getting the frame message
   const frameMessage = await getFrameMessage(
@@ -39,24 +73,39 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     }
   }
 
+  const signature = await approve(
+    "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json",
+    "0xf2E19F606a775c02D785d4c2f4b7BCbb2Dfc21F2",
+    friendAddress
+  );
+
   // Getting the encoded data to build the transaction
   const data = encodeFunctionData({
-    abi: ClickTheButtonABI, // ABI of the contract
-    functionName: "clickTheButton",
+    abi: FarcasterBestFriendsABI, // ABI of the contract
+    functionName: "safeMint",
+    args: [
+      {
+        uri: "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json",
+        minter: "0xf2E19F606a775c02D785d4c2f4b7BCbb2Dfc21F2",
+        friend: friendAddress,
+        signature: signature!, // TO CHANGE
+      },
+    ],
   });
 
-  const txData: FrameTransactionResponse = {
+  // Building the transaction as a FrameTransactionResponse
+  const tx: FrameTransactionResponse = {
     chainId: `eip155:${baseSepolia.id}`,
     method: "eth_sendTransaction",
     params: {
-      abi: [],
+      abi: FarcasterBestFriendsABI,
       data,
-      to: CLICK_THE_BUTTON_CONTRACT_ADDR,
-      value: parseGwei("10000").toString(), // 0.00001 ETH
+      to: "0xfC8Bcec7118CAd2E86cDf7f36A13f79324f743fE", // The contract address deployed on Base Sepolia
+      value: parseGwei("0").toString(),
     },
   };
 
-  return new NextResponse(JSON.stringify(txData), { status: 200 });
+  return new NextResponse(JSON.stringify(tx), { status: 200 });
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
