@@ -37,20 +37,20 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       {
         label: "Mint for me",
         action: "tx",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint`,
+        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?friendAddress=0x0000000000000000000000000000000000000000`,
         //postUrl: "",
       },
       {
         label: "Mint for both",
         action: "tx",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?number=2`,
+        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?friendAddress=0x0000000000000000000000000000000000000000`,
         //postUrl: "",
       },
     ],
     image: {
       src: `${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${frameCallerUsername}&callerPropic=${frameCallerProfileImage}`,
     },
-    post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint`,
+    //post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint`,
   });
 
   return new NextResponse(frame);
