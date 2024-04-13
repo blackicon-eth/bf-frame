@@ -1,12 +1,12 @@
-import { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 import { NextRequest, NextResponse } from "next/server";
-import { Address, encodeFunctionData, parseGwei } from "viem";
+import { Abi, Address, encodeFunctionData, parseGwei } from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { FarcasterBestFriendsABI } from "@/app/lib/abi/FarcasterBestFriendsABI";
 import { BFF_ADDRESS, SERVER_OWNER_ADDRESS } from "@/app/lib/constants/constants";
 import { approve, validateMessage } from "@/app/lib/utils";
+import { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 
-async function getResponse(req: NextRequest): Promise<Response> {
+async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the frame request
   const body = await req.json();
 
@@ -42,23 +42,23 @@ async function getResponse(req: NextRequest): Promise<Response> {
   });
 
   // Building the transaction as a FrameTransactionResponse
-  const tx: any = {
+  const tx: FrameTransactionResponse = {
     chainId: `eip155:${baseSepolia.id}`,
     method: "eth_sendTransaction",
     params: {
-      abi: FarcasterBestFriendsABI,
+      abi: FarcasterBestFriendsABI as Abi,
       to: BFF_ADDRESS, // The contract address deployed on Base Sepolia
-      data,
+      data: data,
       value: "0",
     },
   };
 
   console.log("\nTx created: ", tx, "\n");
 
-  return new Response(tx, { status: 200 });
+  return NextResponse.json(tx);
 }
 
-export async function POST(req: NextRequest): Promise<Response> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   return getResponse(req);
 }
 
