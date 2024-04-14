@@ -53,7 +53,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     },
   };
 
-  console.log("\nTx created: ", tx, "\n");
+  //console.log("\nTx created: ", tx, "\n");
+  console.log("Signature: ", signature);
 
   return NextResponse.json(tx);
 }
