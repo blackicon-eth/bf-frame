@@ -54,7 +54,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       },
     ],
     image: {
-      src: `${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}`,
+      src: `${process.env.NEXT_PUBLIC_BASE_URL}/frames/front_image.jpg`, //`${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}`,
     },
     //post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint`,
   });

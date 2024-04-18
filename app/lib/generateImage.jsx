@@ -13,15 +13,6 @@ export async function generateFriendImage(callerUsername, callerPropic, friendUs
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString();
 
-  async function getImageBuffer(filePath) {
-    const buffer = await sharp(filePath).png().toBuffer();
-
-    return buffer;
-  }
-
-  // Usage
-  return await getImageBuffer(`${process.env.NEXT_PUBLIC_BASE_URL}/public/frames/front_image.jpg`);
-
   // Generate the image with Satori
   const svg = await satori(
     <div style={{ ...style.background, backgroundColor: "#7e5bc0" }}>
