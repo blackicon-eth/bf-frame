@@ -84,10 +84,10 @@ export async function validateMessage(
 
 export async function getFriend(
   callerUsername: string
-): Promise<{ friendUsername: string | undefined; friendPropic: string | undefined; friendAddress: string | undefined }> {
-  let friendUsername = undefined;
-  let friendPropic = undefined;
-  let friendAddress = undefined;
+): Promise<{ friendUsername: string; friendPropic: string; friendAddress: string }> {
+  let friendUsername = "";
+  let friendPropic = "";
+  let friendAddress = "";
 
   // Get friend's name and propic through API calls
   if (callerUsername && false) {

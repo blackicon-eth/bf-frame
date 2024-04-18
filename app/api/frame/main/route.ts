@@ -17,17 +17,16 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   // Getting caller username and caller propic from the frame message
-  const callerUsername = frameMessage?.requesterUserData?.username!;
-  const callerPropic = frameMessage?.requesterUserData?.profileImage!;
-  const callerAddress = frameMessage?.requesterVerifiedAddresses[0];
+  const callerUsername = frameMessage?.requesterUserData?.username ?? "";
+  const callerPropic = frameMessage?.requesterUserData?.profileImage ?? "";
+  const callerAddress = frameMessage?.requesterVerifiedAddresses[0] ?? "";
 
   // Getting caller's friend username and friend propic
   const {
     friendUsername,
     friendPropic,
     friendAddress,
-  }: { friendUsername: string | undefined; friendPropic: string | undefined; friendAddress: string | undefined } =
-    await getFriend(callerUsername);
+  }: { friendUsername: string; friendPropic: string; friendAddress: string } = await getFriend(callerUsername);
 
   console.log("Frame caller username: ", callerUsername);
   console.log("Frame caller profile image: ", callerPropic);
@@ -42,26 +41,18 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       {
         label: "Mint for me",
         action: "tx",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerAddress=${
-          callerAddress ? callerAddress : ""
-        }&friendAddress=0x0000000000000000000000000000000000000000`,
+        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerAddress=${callerAddress}&friendAddress=0x0000000000000000000000000000000000000000`,
         //postUrl: "",
       },
       {
         label: "Mint for both",
         action: "tx",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerAddress=${
-          callerAddress ? callerAddress : ""
-        }&friendAddress=${friendAddress ? friendAddress : ""}`,
+        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerAddress=${callerAddress}&friendAddress=${friendAddress}`,
         //postUrl: "",
       },
     ],
     image: {
-      src: `${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${
-        callerUsername ? callerUsername : ""
-      }&callerPropic=${callerPropic ? callerPropic : ""}&friendUsername=${
-        friendUsername ? friendUsername : ""
-      }&friendPropic=${friendPropic ? friendPropic : ""}`,
+      src: `${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}`,
     },
     //post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint`,
   });
