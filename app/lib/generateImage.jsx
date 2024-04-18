@@ -57,6 +57,8 @@ export async function generateFriendImage(callerUsername, callerPropic, friendUs
     }
   );
 
+  console.log("SVG generated successfully");
+
   const outputPath = join(process.cwd(), "public/frames/test.png");
   const sharpBuffer = sharp(Buffer.from(svg)).toFormat("png");
 
