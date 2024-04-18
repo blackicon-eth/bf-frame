@@ -20,7 +20,7 @@ export async function generateFriendImage(callerUsername, callerPropic, friendUs
   }
 
   // Usage
-  return await getImageBuffer(`${process.env.NEXT_PUBLIC_BASE_URL}/frames/front_image.png`);
+  return await getImageBuffer(`${process.env.NEXT_PUBLIC_BASE_URL}/public/frames/front_image.jpg`);
 
   // Generate the image with Satori
   const svg = await satori(

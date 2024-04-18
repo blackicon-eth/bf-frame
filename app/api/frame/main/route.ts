@@ -41,7 +41,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       {
         label: "Mint for me",
         action: "tx",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerAddress=${callerAddress}&friendAddress=0x0000000000000000000000000000000000000000`,
+        target: `${
+          process.env.NEXT_PUBLIC_BASE_URL
+        }/api/mint?callerAddress=${"0xf2E19F606a775c02D785d4c2f4b7BCbb2Dfc21F2"}&friendAddress=0x0000000000000000000000000000000000000000`,
         //postUrl: "",
       },
       {
