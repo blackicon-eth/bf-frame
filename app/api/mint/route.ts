@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Abi, Address, encodeFunctionData, parseGwei } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { FarcasterBestFriendsABI } from "@/app/lib/abi/FarcasterBestFriendsABI";
-import { BFF_ADDRESS, SERVER_OWNER_ADDRESS } from "@/app/lib/constants/constants";
+import { BFF_ADDRESS } from "@/app/lib/constants/constants";
 import { approve, validateMessage } from "@/app/lib/utils";
 import { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
 
@@ -11,6 +11,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const body = await req.json();
 
   // Getting the number on mints from the nextUrl
+  const callerAddress: Address = req.nextUrl.searchParams.get("callerAddress")! as Address;
   const friendAddress: Address = req.nextUrl.searchParams.get("friendAddress")! as Address;
 
   // Validating the frame message
@@ -20,8 +21,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   const signature = await approve(
-    "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json",
-    SERVER_OWNER_ADDRESS, // TO CHANGE
+    "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json", // TO CHANGE
+    callerAddress,
     friendAddress
   );
 
@@ -32,7 +33,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     args: [
       {
         uri: "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json",
-        minter: SERVER_OWNER_ADDRESS,
+        minter: callerAddress,
         friend: friendAddress,
         signature: signature as Address,
       },

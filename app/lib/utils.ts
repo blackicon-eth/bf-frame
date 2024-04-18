@@ -4,6 +4,31 @@ import { Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
 import { baseSepolia } from "viem/chains";
+import axios from "axios";
+import { init, fetchQuery } from "@airstack/node";
+
+init(process.env.AIRSTACK_KEY!);
+
+const query = `query GetPropicsQuery($fname: String) {
+  Socials(
+    input: {
+      filter: {
+        profileName: { _eq: $fname }
+        dappName: { _eq: farcaster }
+      }
+      blockchain: ethereum
+    }
+  ) {
+    Social {
+      profileImage
+      profileImageContentValue {
+        image {
+          small
+        }
+      }
+    }
+  }
+}`;
 
 export async function approve(uri: string, minter: Address, friend: Address) {
   const voucher = { uri, minter, friend };
@@ -34,11 +59,6 @@ export async function approve(uri: string, minter: Address, friend: Address) {
   }
 }
 
-export const getFarcasterAccountAddress = (interactor: FrameValidationData["interactor"]) => {
-  // Get the first verified account or the custody address
-  return interactor.verified_accounts[0] ?? interactor.custody_address;
-};
-
 export async function validateMessage(
   body: any
 ): Promise<{ frameMessage: FrameActionDataParsedAndHubContext | undefined; isValid: boolean }> {
@@ -59,6 +79,35 @@ export async function validateMessage(
   if (!process.env.NEXT_PUBLIC_BASE_URL!.includes("localhost") && (!frameMessage || !frameMessage.isValid)) {
     return { frameMessage: undefined, isValid: false };
   }
-  console.log("Frame message is valid! Frame message: ", frameMessage);
   return { frameMessage: frameMessage, isValid: true };
+}
+
+export async function getFriend(
+  callerUsername: string
+): Promise<{ friendUsername: string | undefined; friendPropic: string | undefined; friendAddress: string | undefined }> {
+  let friendUsername = undefined;
+  let friendPropic = undefined;
+  let friendAddress = undefined;
+
+  // Get friend's name and propic through API calls
+  if (callerUsername && false) {
+    try {
+      const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
+      console.log("response:", response.data.result);
+      if (response.data.result[0]) {
+        const element = response.data.result[0];
+        friendUsername = element.fname.toString();
+        friendAddress = element.address;
+        const { data, error } = await fetchQuery(query, { fname: friendUsername });
+        if (data.Socials.Social) {
+          friendPropic = data.Socials.Social[0].profileImage;
+        } else if (error) {
+          console.log("error:", error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return { friendUsername, friendPropic, friendAddress };
 }
