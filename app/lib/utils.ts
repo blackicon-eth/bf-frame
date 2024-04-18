@@ -90,7 +90,7 @@ export async function getFriend(
   let friendAddress = "";
 
   // Get friend's name and propic through API calls
-  if (callerUsername && false) {
+  if (callerUsername) {
     try {
       const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
       console.log("response:", response.data.result);
