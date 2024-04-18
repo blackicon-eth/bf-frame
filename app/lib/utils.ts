@@ -1,5 +1,5 @@
 import { FrameValidationData } from "@coinbase/onchainkit";
-import { getFrameMessage } from "frames.js";
+import { FrameActionDataParsedAndHubContext, getFrameMessage } from "frames.js";
 import { Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
@@ -39,7 +39,9 @@ export const getFarcasterAccountAddress = (interactor: FrameValidationData["inte
   return interactor.verified_accounts[0] ?? interactor.custody_address;
 };
 
-export async function validateMessage(body: any): Promise<any> {
+export async function validateMessage(
+  body: any
+): Promise<{ frameMessage: FrameActionDataParsedAndHubContext | undefined; isValid: boolean }> {
   // Getting the frame message
   const frameMessage = await getFrameMessage(
     { trustedData: body.trustedData, untrustedData: body.untrustedData },
@@ -55,7 +57,8 @@ export async function validateMessage(body: any): Promise<any> {
 
   // If the base url is not set or is not localhost, we need to validate the frame message
   if (!process.env.NEXT_PUBLIC_BASE_URL!.includes("localhost") && (!frameMessage || !frameMessage.isValid)) {
-    return { FrameMessage: null, isValid: false };
+    return { frameMessage: undefined, isValid: false };
   }
-  return { FrameMessage: frameMessage, isValid: true };
+  console.log("Frame message is valid! Frame message: ", frameMessage);
+  return { frameMessage: frameMessage, isValid: true };
 }

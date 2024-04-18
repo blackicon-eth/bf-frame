@@ -38,9 +38,7 @@ export async function generateFriendImage(callerUsername, callerPropic) {
   var friendName;
 
   // Get friend's name and propic through API calls
-  if (callerUsername && callerPropic && false) {
-    console.log("callerUsername:", callerUsername);
-    console.log("callerPropic:", callerPropic);
+  if (callerUsername && callerPropic) {
     try {
       const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
       console.log("response:", response.data.result);
@@ -65,6 +63,8 @@ export async function generateFriendImage(callerUsername, callerPropic) {
   // Get current date to show on the image
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString();
+
+  console.log("Trying to calculare svg...");
 
   // Generate the image with Satori
   const svg = await satori(
@@ -109,6 +109,9 @@ export async function generateFriendImage(callerUsername, callerPropic) {
       ],
     }
   );
+
+  console.log("Calculated SVG");
+
   const outputPath = join(process.cwd(), "public/frames/test.png");
   const sharpBuffer = sharp(Buffer.from(svg)).toFormat("png");
 
@@ -116,5 +119,7 @@ export async function generateFriendImage(callerUsername, callerPropic) {
   if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.includes("localhost")) {
     await sharpBuffer.toFile(outputPath);
   }
+
+  console.log("Returning image...");
   return await sharpBuffer.toBuffer();
 }

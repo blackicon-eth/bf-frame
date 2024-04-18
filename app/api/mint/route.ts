@@ -10,8 +10,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the frame request
   const body = await req.json();
 
-  //console.log("body", body);
-
   // Getting the number on mints from the nextUrl
   const friendAddress: Address = req.nextUrl.searchParams.get("friendAddress")! as Address;
 
@@ -36,7 +34,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         uri: "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json",
         minter: SERVER_OWNER_ADDRESS,
         friend: friendAddress,
-        signature: signature!,
+        signature: signature as Address,
       },
     ],
   });
@@ -54,7 +52,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   };
 
   //console.log("\nTx created: ", tx, "\n");
-  console.log("Signature: ", signature);
+  console.log("Signature: ", signature as Address);
 
   return NextResponse.json(tx);
 }
