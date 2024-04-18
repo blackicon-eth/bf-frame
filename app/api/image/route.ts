@@ -15,7 +15,11 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const _friendPropic = friendPropic || undefined;
 
   const image = await generateFriendImage(_callerUsername, _callerPropic, _friendUsername, _friendPropic);
-  return new NextResponse(image);
+  return new NextResponse(image, {
+    headers: {
+      "Content-Type": "image/png",
+    },
+  });
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
