@@ -2,7 +2,7 @@ import satori from "satori";
 import { readFileSync } from "fs";
 import { join } from "path";
 import * as style from "./style_components/styles";
-import { pinOnPinata, calculateCID } from "@/app/lib/utils";
+import { pinImageOnPinata, pinJsonOnPinata, calculateCID } from "@/app/lib/utils";
 import sharp from "sharp";
 import { Readable } from "stream";
 
@@ -15,6 +15,7 @@ export async function generateFriendImage(
   callerPropic,
   friendUsername,
   friendPropic,
+  friendshipLevel = false,
   onlyCID = false,
   onlyPin = false
 ) {
@@ -77,35 +78,62 @@ export async function generateFriendImage(
     await sharpPNG.toFile(outputPath);
   }
 
-  const json_test = {
-    description: "Friendly OpenSea Creature that enjoys long swims in the ocean.",
-    external_url: "https://openseacreatures.io/3",
-    image: "https://storage.googleapis.com/opensea-prod.appspot.com/puffs/3.png",
-    name: "Dave Starbelly",
-    attributes: {
-      trait_type: "Base",
-      value: "Starfish",
-    },
-  };
-
   // If onlyCID is true, we calculate the CID and return it
-  if (onlyCID) {
+  if (true) {
+    //onlyCID && friendshipLevel) {
     const imageCid = await calculateCID(buffer);
-    console.log("Image CID: ", imageCid);
 
-    const jsonCid = await calculateCID(Buffer.from(JSON.stringify(json_test)));
+    const json = {
+      description:
+        friendUsername == callerUsername
+          ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
+          : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+      image: imageCid,
+      name:
+        friendUsername == callerUsername
+          ? `${callerUsername} and ${friendUsername}... are Farcaster best friends?!`
+          : `${callerUsername} and ${friendUsername} are Farcaster best friends!`,
+      attributes: {
+        trait_type: "Friendship level",
+        value: friendshipLevel,
+      },
+    };
+
+    const jsonCid = await calculateCID(Buffer.from(JSON.stringify(json)));
+
     console.log("JSON CID: ", jsonCid);
+    console.log("Image CID: ", imageCid);
+    //return { jsonCid, imageCid };
   }
   // If onlyPin is true, we pin the image to Pinata and return the pin
-  else if (onlyPin) {
+  if (true) {
+    //onlyPin && friendshipLevel) {
     const stream = new Readable();
     stream.push(buffer);
     stream.push(null);
+    const imageHash = await pinImageOnPinata(stream);
 
-    const { jsonHash, imageHash } = await pinOnPinata(json_test, stream);
+    const json = {
+      description:
+        friendUsername == callerUsername
+          ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
+          : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+      image: imageHash.IpfsHash,
+      name:
+        friendUsername == callerUsername
+          ? `${callerUsername} and ${friendUsername}... are Farcaster best friends?!`
+          : `${callerUsername} and ${friendUsername} are Farcaster best friends!`,
+      attributes: {
+        trait_type: "Friendship level",
+        value: friendshipLevel,
+      },
+    };
+
+    const jsonHash = await pinJsonOnPinata(json);
+
     console.log("Pinned image: ", imageHash);
     console.log("Pinned json: ", jsonHash);
-    return { jsonHash, imageHash };
+    //return { jsonHash, imageHash };
   }
   // Otherwise, we return the buffer
   return buffer;
