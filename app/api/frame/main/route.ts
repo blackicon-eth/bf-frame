@@ -35,6 +35,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   console.log("Friend propic: ", friendPropic);
   console.log("Friend address: ", friendAddress);
 
+  //await nftStorageStoreAsset(); // This one is to store on nft.storage
+
   // Creating the frame
   const frame = getFrameHtmlResponse({
     buttons: [
