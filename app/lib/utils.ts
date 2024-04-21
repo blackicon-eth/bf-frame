@@ -1,11 +1,15 @@
-import { FrameValidationData } from "@coinbase/onchainkit";
 import { FrameActionDataParsedAndHubContext, getFrameMessage } from "frames.js";
 import { Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
 import { baseSepolia } from "viem/chains";
-import axios from "axios";
+import { NFTStorage, File } from "nft.storage";
 import { init, fetchQuery } from "@airstack/node";
+import pinataSDK from "@pinata/sdk";
+import axios from "axios";
+import fs from "fs";
+// @ts-ignore
+import Hash from "ipfs-only-hash";
 
 init(process.env.AIRSTACK_KEY!);
 
@@ -110,4 +114,64 @@ export async function getFriend(
     }
   }
   return { friendUsername, friendPropic, friendAddress };
+}
+
+export async function nftStorageStoreAsset() {
+  const API_KEY = process.env.NFT_STORAGE_API_KEY!;
+
+  console.log("API_KEY:", API_KEY);
+
+  try {
+    var client = new NFTStorage({ token: API_KEY });
+  } catch (err: any) {
+    console.log("Failed to create NFTStorage client with error: ", err.message);
+    return;
+  }
+
+  try {
+    const metadata = await client.store({
+      name: "TEST NFT",
+      description: "My TEST NFT!",
+      image: new File([await fs.promises.readFile("public/frames/test.png")], "test.png", { type: "image/png" }),
+    });
+    console.log("Metadata stored on Filecoin and IPFS with URL:", metadata.url);
+  } catch (err: any) {
+    console.log("Failed to store metadata with error: ", err.message);
+    return;
+  }
+}
+
+export async function calculateCID(data: any) {
+  return await Hash.of(data);
+}
+
+export async function pinOnPinata(json = undefined, image = undefined) {
+  //Promise<PinataPinResponse> {
+  const pinata = new pinataSDK({
+    pinataApiKey: process.env.PINATA_API_KEY,
+    pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
+  });
+
+  let jsonHash;
+  let imageHash;
+
+  if (json) {
+    const options = {
+      pinataMetadata: {
+        name: "JSON for TEST NFT",
+      },
+    };
+    jsonHash = await pinata.pinJSONToIPFS(json, options);
+  }
+
+  if (image) {
+    const options = {
+      pinataMetadata: {
+        name: "Image for TEST NFT",
+      },
+    };
+    imageHash = await pinata.pinFileToIPFS(image, options);
+  }
+
+  return { jsonHash, imageHash };
 }
