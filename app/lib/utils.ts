@@ -5,11 +5,13 @@ import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./cons
 import { baseSepolia } from "viem/chains";
 import { NFTStorage, File } from "nft.storage";
 import { init, fetchQuery } from "@airstack/node";
-import pinataSDK from "@pinata/sdk";
+import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
 import axios from "axios";
 import fs from "fs";
 // @ts-ignore
 import Hash from "ipfs-only-hash";
+import { Readable } from "stream";
+import { NftJsonInterface } from "./interfaces/interfaces";
 
 init(process.env.AIRSTACK_KEY!);
 
@@ -88,10 +90,11 @@ export async function validateMessage(
 
 export async function getFriend(
   callerUsername: string
-): Promise<{ friendUsername: string; friendPropic: string; friendAddress: string }> {
+): Promise<{ friendUsername: string; friendPropic: string; friendAddress: string; friendshipLevel: string }> {
   let friendUsername = "";
   let friendPropic = "";
   let friendAddress = "";
+  let friendshipLevel = "";
 
   // Get friend's name and propic through API calls
   if (callerUsername && false) {
@@ -102,6 +105,7 @@ export async function getFriend(
         const element = response.data.result[0];
         friendUsername = element.fname.toString();
         friendAddress = element.address;
+        friendshipLevel = element.score;
         const { data, error } = await fetchQuery(query, { fname: friendUsername });
         if (data.Socials.Social) {
           friendPropic = data.Socials.Social[0].profileImage;
@@ -113,7 +117,7 @@ export async function getFriend(
       console.error(error);
     }
   }
-  return { friendUsername, friendPropic, friendAddress };
+  return { friendUsername, friendPropic, friendAddress, friendshipLevel };
 }
 
 export async function nftStorageStoreAsset() {
@@ -145,33 +149,34 @@ export async function calculateCID(data: any) {
   return await Hash.of(data);
 }
 
-export async function pinOnPinata(json = undefined, image = undefined) {
-  //Promise<PinataPinResponse> {
+export async function pinImageOnPinata(image: Readable): Promise<PinataPinResponse> {
   const pinata = new pinataSDK({
     pinataApiKey: process.env.PINATA_API_KEY,
     pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
   });
 
-  let jsonHash;
-  let imageHash;
+  const options = {
+    pinataMetadata: {
+      name: "Image for TEST NFT",
+    },
+  };
+  const imageHash = await pinata.pinFileToIPFS(image, options);
 
-  if (json) {
-    const options = {
-      pinataMetadata: {
-        name: "JSON for TEST NFT",
-      },
-    };
-    jsonHash = await pinata.pinJSONToIPFS(json, options);
-  }
+  return imageHash;
+}
 
-  if (image) {
-    const options = {
-      pinataMetadata: {
-        name: "Image for TEST NFT",
-      },
-    };
-    imageHash = await pinata.pinFileToIPFS(image, options);
-  }
+export async function pinJsonOnPinata(json: NftJsonInterface): Promise<PinataPinResponse> {
+  const pinata = new pinataSDK({
+    pinataApiKey: process.env.PINATA_API_KEY,
+    pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
+  });
 
-  return { jsonHash, imageHash };
+  const options = {
+    pinataMetadata: {
+      name: "JSON for TEST NFT",
+    },
+  };
+  const jsonHash = await pinata.pinJSONToIPFS(json, options);
+
+  return jsonHash;
 }
