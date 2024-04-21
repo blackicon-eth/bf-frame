@@ -145,38 +145,73 @@ export async function nftStorageStoreAsset() {
   }
 }
 
-export async function calculateCID(data: any) {
-  return await Hash.of(data);
+export async function calculateCID(
+  imageBuffer: Buffer,
+  friendUsername: string,
+  callerUsername: string,
+  friendshipLevel: string
+): Promise<{ imageCid: string; jsonCid: string }> {
+  const imageCid = await Hash.of(imageBuffer);
+
+  const json = {
+    description:
+      friendUsername == callerUsername
+        ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
+        : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+    image: imageCid,
+    name:
+      friendUsername == callerUsername
+        ? `${callerUsername} and ${friendUsername}... are Farcaster best friends?!`
+        : `${callerUsername} and ${friendUsername} are Farcaster best friends!`,
+    attributes: {
+      trait_type: "Friendship level",
+      value: friendshipLevel,
+    },
+  };
+
+  const jsonCid = await Hash.of(Buffer.from(JSON.stringify(json)));
+  return { imageCid, jsonCid };
 }
 
-export async function pinImageOnPinata(image: Readable): Promise<PinataPinResponse> {
+export async function pinOnPinata(
+  imageBuffer: Buffer,
+  friendUsername: string,
+  callerUsername: string,
+  friendshipLevel: string
+): Promise<{ imageResponse: PinataPinResponse; jsonResponse: PinataPinResponse }> {
   const pinata = new pinataSDK({
     pinataApiKey: process.env.PINATA_API_KEY,
     pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
   });
 
-  const options = {
+  const stream = new Readable();
+  stream.push(imageBuffer);
+  stream.push(null);
+  const imageResponse = await pinata.pinFileToIPFS(stream, {
     pinataMetadata: {
-      name: "Image for TEST NFT",
+      name: `${callerUsername} x ${friendUsername} image`,
     },
-  };
-  const imageHash = await pinata.pinFileToIPFS(image, options);
-
-  return imageHash;
-}
-
-export async function pinJsonOnPinata(json: NftJsonInterface): Promise<PinataPinResponse> {
-  const pinata = new pinataSDK({
-    pinataApiKey: process.env.PINATA_API_KEY,
-    pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
   });
 
-  const options = {
-    pinataMetadata: {
-      name: "JSON for TEST NFT",
+  const json = {
+    description:
+      friendUsername == callerUsername
+        ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
+        : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+    image: imageResponse.IpfsHash,
+    name:
+      friendUsername == callerUsername ? `${callerUsername} x ${friendUsername}` : `${callerUsername} x ${friendUsername}`,
+    attributes: {
+      trait_type: "Friendship level",
+      value: friendshipLevel,
     },
   };
-  const jsonHash = await pinata.pinJSONToIPFS(json, options);
 
-  return jsonHash;
+  const jsonResponse = await pinata.pinJSONToIPFS(json, {
+    pinataMetadata: {
+      name: `${callerUsername} x ${friendUsername} json`,
+    },
+  });
+
+  return { imageResponse, jsonResponse };
 }

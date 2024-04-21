@@ -8,13 +8,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const friendUsername = req.nextUrl.searchParams.get("friendUsername");
   const friendPropic = req.nextUrl.searchParams.get("friendPropic");
 
-  // Convert null or empty string to undefined
-  const _callerUsername = callerUsername || undefined;
-  const _callerPropic = callerPropic || undefined;
-  const _friendUsername = friendUsername || undefined;
-  const _friendPropic = friendPropic || undefined;
-
-  const image = await generateFriendImage(_callerUsername, _callerPropic, _friendUsername, _friendPropic);
+  // Asserting that the value return with this call is a Buffer
+  const image = await generateFriendImage(callerUsername, callerPropic, friendUsername, friendPropic);
   return new NextResponse(image, {
     headers: {
       "Content-Type": "image/png",

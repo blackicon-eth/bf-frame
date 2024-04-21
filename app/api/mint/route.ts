@@ -3,8 +3,9 @@ import { Abi, Address, encodeFunctionData } from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { FarcasterBestFriendsABI } from "@/app/lib/abi/FarcasterBestFriendsABI";
 import { BFF_ADDRESS } from "@/app/lib/constants/constants";
-import { approve, validateMessage } from "@/app/lib/utils";
+import { approve, calculateCID, validateMessage } from "@/app/lib/utils";
 import { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
+import { generateFriendImage } from "@/app/lib/generateImage";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the frame request
@@ -13,6 +14,17 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the number on mints from the nextUrl
   const callerAddress: Address = req.nextUrl.searchParams.get("callerAddress")! as Address;
   const friendAddress: Address = req.nextUrl.searchParams.get("friendAddress")! as Address;
+  const callerUsername = req.nextUrl.searchParams.get("callerUsername")!;
+  const callerPropic = req.nextUrl.searchParams.get("callerPropic")!;
+  const friendUsername = req.nextUrl.searchParams.get("friendUsername")!;
+  const friendPropic = req.nextUrl.searchParams.get("friendPropic")!;
+  const friendshipLevel = req.nextUrl.searchParams.get("friendshipLevel")!;
+
+  const imageBuffer = await generateFriendImage(callerUsername, callerPropic, friendUsername, friendPropic);
+  const { imageCid, jsonCid } = await calculateCID(imageBuffer, friendUsername, callerUsername, friendshipLevel);
+
+  console.log("JSON CID: ", jsonCid);
+  console.log("Image CID: ", imageCid);
 
   // Validating the frame message
   const { isValid } = await validateMessage(body);
@@ -20,11 +32,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return new NextResponse("Message not valid", { status: 500 });
   }
 
-  const signature = await approve(
-    "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json", // TO CHANGE
-    callerAddress,
-    friendAddress
-  );
+  const signature = await approve(jsonCid, callerAddress, friendAddress);
 
   // Getting the encoded data to build the transaction
   const data = encodeFunctionData({
@@ -32,7 +40,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     functionName: "safeMint",
     args: [
       {
-        uri: "https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi/5.json",
+        uri: jsonCid,
         minter: callerAddress,
         friend: friendAddress,
         signature: signature as Address,
