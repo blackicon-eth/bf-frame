@@ -26,7 +26,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     friendUsername,
     friendPropic,
     friendAddress,
-  }: { friendUsername: string; friendPropic: string; friendAddress: string } = await getFriend(callerUsername);
+  }: { friendUsername: string; friendPropic: string; friendAddress: string; friendshipLevel: string } = await getFriend(
+    callerUsername
+  );
 
   console.log("Frame caller username: ", callerUsername);
   console.log("Frame caller profile image: ", callerPropic);
