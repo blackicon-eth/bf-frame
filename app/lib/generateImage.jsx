@@ -19,36 +19,32 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString();
 
-  const upperText =
+  const bgImage =
     !callerUsername || !friendUsername || !callerPropic || !friendPropic
-      ? "It looks like one of you is missing..."
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/frames/missing.png`
       : friendUsername == callerUsername
-      ? "Your best friend is... yourself?!"
-      : "It looks like you two are Farcaster best friends!";
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/frames/yourself.png`
+      : `${process.env.NEXT_PUBLIC_BASE_URL}/frames/best_friends.png`;
 
   // Generate the image with Satori
   const svg = await satori(
     <div style={{ ...style.background, backgroundColor: "#7e5bc0" }}>
-      <span tw={style.mainText}>{upperText}</span>
-      <div style={style.mainContainer}>
-        <div style={style.friendContainer}>
-          {callerPropic ? (
-            <img src={callerPropic} style={style.imageFriend} />
-          ) : (
-            <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
-          )}
-
-          <span tw={style.twFriendName}>{callerUsername ? callerUsername : "Not found..."}</span>
-        </div>
-
-        <div style={style.friendContainer}>
-          {friendPropic ? (
-            <img src={friendPropic} style={style.imageFriend} />
-          ) : (
-            <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
-          )}
-          <span tw={style.twFriendName}>{friendUsername ? friendUsername : "Not found..."}</span>
-        </div>
+      <img src={bgImage} style={style.bgImage} />
+      <div style={style.callerContainer}>
+        {callerPropic ? (
+          <img src={callerPropic} style={style.imageFriend} />
+        ) : (
+          <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
+        )}
+        <span tw={style.twFriendName}>{callerUsername ? callerUsername : "Not found..."}</span>
+      </div>
+      <div style={style.friendContainer}>
+        {friendPropic ? (
+          <img src={friendPropic} style={style.imageFriend} />
+        ) : (
+          <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
+        )}
+        <span tw={style.twFriendName}>{friendUsername ? friendUsername : "Not found..."}</span>
       </div>
       <span tw={style.twDate} style={style.date}>
         Created on {formattedDate}
@@ -73,7 +69,7 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
 
   // Save the image to the file system if we are running locally
   if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.includes("localhost")) {
-    const outputPath = join(process.cwd(), "public/frames/test.png");
+    const outputPath = join(process.cwd(), "public/test.png");
     await sharpPNG.toFile(outputPath);
   }
 

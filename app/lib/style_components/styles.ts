@@ -3,6 +3,14 @@ export const frontImage = {
   height: "1500px",
 };
 
+export const bgImage = {
+  width: "100%",
+  height: "100%",
+  postition: "absolute",
+  bottom: "0",
+  left: "0",
+};
+
 export const background = {
   display: "flex",
   flexDirection: "column",
@@ -23,22 +31,33 @@ export const mainContainer = {
   marginBottom: "100px",
 };
 
+export const callerContainer = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  position: "absolute",
+  left: "30",
+  bottom: "230",
+};
+
 export const friendContainer = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  position: "relative",
+  position: "absolute",
+  left: "685",
+  bottom: "230",
 };
 
 export const imageFriend = {
-  height: "650",
-  width: "650",
+  height: "785",
+  width: "785",
   borderRadius: "100%",
 };
 
-export const date = { position: "absolute", left: "-17", bottom: "-18" };
+export const date = { position: "absolute", left: "13", bottom: "24" };
 
-export const mainText = "text-[65px] pb-22 text-white";
 export const twFriendName = "flex rounded-3xl bg-white p-15 pb-5 absolute -bottom-26";
-export const twDate = "flex justify-start items-start text-[27px] text-white flex rounded-xl bg-black p-9";
+export const twDate = "flex justify-start items-start text-[35px] text-white";
