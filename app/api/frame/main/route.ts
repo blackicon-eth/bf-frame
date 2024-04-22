@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
 import { FrameActionDataParsedAndHubContext } from "frames.js";
-import { getErrorFrame } from "@/app/lib/getFrame";
+import { getInvalidFidFrame } from "@/app/lib/getFrame";
 import { getFriend, validateMessage } from "@/app/lib/utils";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
@@ -13,7 +13,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     await validateMessage(data);
   if (!isValid) {
     console.log("NOT VALID!");
-    return getErrorFrame(); // OR USE AN INVALID FRAME
+    return getInvalidFidFrame(); // OR USE AN INVALID FRAME
   }
 
   // Getting caller username and caller propic from the frame message
@@ -70,6 +70,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
           ],
     image: {
       src: `${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}`,
+      aspectRatio: "1:1",
     },
     post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/frame/main`,
   });

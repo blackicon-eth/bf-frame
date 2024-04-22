@@ -2,9 +2,7 @@ import satori from "satori";
 import { readFileSync } from "fs";
 import { join } from "path";
 import * as style from "./style_components/styles";
-import { pinImageOnPinata, pinJsonOnPinata, calculateCID } from "@/app/lib/utils";
 import sharp from "sharp";
-import { Readable } from "stream";
 
 // Loading fonts
 const gothamBoldItalic = join(process.cwd(), "public/fonts/GothamBoldItalic.ttf");
@@ -57,8 +55,8 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
       </span>
     </div>,
     {
-      width: 1910,
-      height: 1000,
+      width: 1500,
+      height: 1500,
       fonts: [
         {
           data: gothamBoldItalicData,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pinOnPinata, validateMessage } from "@/app/lib/utils";
 import { generateFriendImage } from "@/app/lib/generateImage";
-import { getErrorFrame } from "@/app/lib/getFrame";
+import { getInvalidFidFrame } from "@/app/lib/getFrame";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the frame request
@@ -26,7 +26,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return new NextResponse("Message not valid", { status: 500 });
   }
 
-  return getErrorFrame();
+  return getInvalidFidFrame();
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

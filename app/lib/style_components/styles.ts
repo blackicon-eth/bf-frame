@@ -1,6 +1,6 @@
 export const frontImage = {
-  width: "1910px",
-  height: "1000px",
+  width: "1500",
+  height: "1500px",
 };
 
 export const background = {
@@ -35,14 +35,6 @@ export const imageFriend = {
   height: "650",
   width: "650",
   borderRadius: "100%",
-};
-
-export const logo = {
-  width: "90px",
-  height: "90px",
-  position: "absolute",
-  left: "695",
-  bottom: "280",
 };
 
 export const date = { position: "absolute", left: "-17", bottom: "-18" };

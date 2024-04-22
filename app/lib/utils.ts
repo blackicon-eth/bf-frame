@@ -159,13 +159,10 @@ export async function calculateCID(
         ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
         : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
     image: imageCid,
-    name:
-      friendUsername == callerUsername
-        ? `${callerUsername} and ${friendUsername}... are Farcaster best friends?!`
-        : `${callerUsername} and ${friendUsername} are Farcaster best friends!`,
+    name: `${callerUsername} x ${friendUsername}`,
     attributes: {
       trait_type: "Friendship level",
-      value: friendshipLevel,
+      value: parseInt(friendshipLevel),
     },
   };
 
@@ -199,11 +196,10 @@ export async function pinOnPinata(
         ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
         : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
     image: imageResponse.IpfsHash,
-    name:
-      friendUsername == callerUsername ? `${callerUsername} x ${friendUsername}` : `${callerUsername} x ${friendUsername}`,
+    name: `${callerUsername} x ${friendUsername}`,
     attributes: {
       trait_type: "Friendship level",
-      value: friendshipLevel,
+      value: parseInt(friendshipLevel),
     },
   };
 
