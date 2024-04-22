@@ -1,8 +1,3 @@
-export const frontImage = {
-  width: "1500",
-  height: "1500px",
-};
-
 export const bgImage = {
   width: "100%",
   height: "100%",
@@ -22,13 +17,6 @@ export const background = {
   fontSize: 60,
   letterSpacing: -2,
   fontWeight: 700,
-};
-
-export const mainContainer = {
-  display: "flex",
-  flexDirection: "row",
-  gap: "-30",
-  marginBottom: "100px",
 };
 
 export const callerContainer = {

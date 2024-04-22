@@ -11,7 +11,6 @@ import fs from "fs";
 // @ts-ignore
 import Hash from "ipfs-only-hash";
 import { Readable } from "stream";
-import { NftJsonInterface } from "./interfaces/interfaces";
 
 init(process.env.AIRSTACK_KEY!);
 
@@ -97,7 +96,7 @@ export async function getFriend(
   let friendshipLevel = "";
 
   // Get friend's name and propic through API calls
-  if (callerUsername) {
+  if (callerUsername && false) {
     try {
       const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
       console.log("response:", response.data.result);

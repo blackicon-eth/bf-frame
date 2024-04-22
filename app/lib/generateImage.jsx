@@ -28,7 +28,7 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
 
   // Generate the image with Satori
   const svg = await satori(
-    <div style={{ ...style.background, backgroundColor: "#7e5bc0" }}>
+    <div style={style.background}>
       <img src={bgImage} style={style.bgImage} />
       <div style={style.callerContainer}>
         {callerPropic ? (
