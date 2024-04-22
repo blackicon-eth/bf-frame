@@ -11,9 +11,8 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Validating the frame message
   const { frameMessage, isValid }: { frameMessage: FrameActionDataParsedAndHubContext | undefined; isValid: boolean } =
     await validateMessage(data);
-  if (!isValid) {
-    console.log("NOT VALID!");
-    return getInvalidFidFrame(); // OR USE AN INVALID FRAME
+  if (!isValid || !frameMessage) {
+    return getInvalidFidFrame();
   }
 
   // Getting caller username and caller propic from the frame message
@@ -45,7 +44,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Creating the frame
   const frame = getFrameHtmlResponse({
     buttons:
-      callerUsername && callerAddress && callerPropic && friendUsername && friendAddress && friendPropic && friendshipLevel
+      (callerUsername &&
+        callerAddress &&
+        callerPropic &&
+        friendUsername &&
+        friendAddress &&
+        friendPropic &&
+        friendshipLevel) ||
+      true
         ? [
             {
               label: "Mint for me",
@@ -72,7 +78,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       src: `${process.env.NEXT_PUBLIC_BASE_URL}/api/image?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}`,
       aspectRatio: "1:1",
     },
-    post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/frame/main`,
+    post_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/main`,
   });
 
   return new NextResponse(frame);
