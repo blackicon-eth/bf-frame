@@ -41,11 +41,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const frame = getFrameHtmlResponse({
     buttons: [
       {
-        label: "Tip",
-        action: "link",
-        target: `${process.env.NEXT_PUBLIC_BASE_URL}`,
-      },
-      {
         label: "See transaction",
         action: "link",
         target: `https://base-sepolia.blockscout.com/tx/${frameMessage.transactionId}`,

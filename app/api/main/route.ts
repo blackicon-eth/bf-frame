@@ -51,7 +51,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
               action: "tx",
               target: `${
                 process.env.NEXT_PUBLIC_BASE_URL
-              }/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${"0xf2E19F606a775c02D785d4c2f4b7BCbb2Dfc21F2"}&friendAddress=0x0000000000000000000000000000000000000000`,
+              }/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${
+                "0xf2E19F606a775c02D785d4c2f4b7BCbb2Dfc21F2" /*callerAddress*/
+              }&friendAddress=0x0000000000000000000000000000000000000000`,
               postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post_transaction?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}`,
             },
             {
@@ -59,9 +61,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
               action: "tx",
               target: `${
                 process.env.NEXT_PUBLIC_BASE_URL
-              }/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${callerAddress}&friendAddress=${
-                "0x82A29547CA8970c2aDECF4C2db7e364339f9a4B7" /*friendAddress*/
-              }`,
+              }/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${
+                "0xf2E19F606a775c02D785d4c2f4b7BCbb2Dfc21F2" /*callerAddress*/
+              }&friendAddress=${"0x82A29547CA8970c2aDECF4C2db7e364339f9a4B7" /*friendAddress*/}`,
               postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post_transaction?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}`,
             },
           ]
