@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Abi, Address, encodeFunctionData } from "viem";
+import { Abi } from "viem";
 import { base, baseSepolia } from "viem/chains";
 import { FarcasterBestFriendsABI } from "@/app/lib/abi/FarcasterBestFriendsABI";
 import { BFF_ADDRESS } from "@/app/lib/constants/constants";
-import { approve, calculateCID, validateMessage } from "@/app/lib/utils";
+import { validateMessage } from "@/app/lib/utils";
 import { FrameTransactionResponse } from "@coinbase/onchainkit/frame";
-import { generateFriendImage } from "@/app/lib/generateImage";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the frame request
