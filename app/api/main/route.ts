@@ -44,14 +44,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Creating the frame
   const frame = getFrameHtmlResponse({
     buttons:
-      (callerUsername &&
-        callerAddress &&
-        callerPropic &&
-        friendUsername &&
-        friendAddress &&
-        friendPropic &&
-        friendshipLevel) ||
-      true
+      callerUsername && callerAddress && callerPropic && friendUsername && friendAddress && friendPropic && friendshipLevel
         ? [
             {
               label: "Mint for me",
@@ -64,7 +57,11 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
             {
               label: "Mint for both",
               action: "tx",
-              target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${callerAddress}&friendAddress=${friendAddress}`,
+              target: `${
+                process.env.NEXT_PUBLIC_BASE_URL
+              }/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${callerAddress}&friendAddress=${
+                "0x82A29547CA8970c2aDECF4C2db7e364339f9a4B7" /*friendAddress*/
+              }`,
               postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post_transaction?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}`,
             },
           ]
