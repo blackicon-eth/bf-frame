@@ -98,15 +98,16 @@ export async function getFriend(
   // Get friend's name and propic through API calls
   if (callerUsername) {
     try {
-      const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=2", [callerUsername]);
+      const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
       console.log("response:", response.data.result);
-      if (response.data.result[1] && response.data.result[1].fname !== "early") {
-        const element = response.data.result[1];
+      if (response.data.result[0]) {
+        const element = response.data.result[0];
         friendUsername = element.fname.toString();
         friendAddress = element.address;
         friendshipLevel = element.score;
         const { data, error } = await fetchQuery(query, { fname: friendUsername });
         if (data.Socials.Social) {
+          console.log("data:", data.Socials.Social[0]);
           friendPropic = data.Socials.Social[0].profileImage;
         } else if (error) {
           console.log("error:", error);
