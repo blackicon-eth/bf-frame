@@ -31,19 +31,11 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
     <div style={style.background}>
       <img src={bgImage} style={style.bgImage} />
       <div style={style.callerContainer}>
-        {callerPropic ? (
-          <img src={callerPropic} style={style.imageFriend} />
-        ) : (
-          <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
-        )}
+        <img src={callerPropic ?? `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
         <span tw={style.twFriendName}>{callerUsername ? callerUsername : "Not found..."}</span>
       </div>
       <div style={style.friendContainer}>
-        {friendPropic ? (
-          <img src={friendPropic} style={style.imageFriend} />
-        ) : (
-          <img src={`${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
-        )}
+        <img src={friendPropic ?? `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`} style={style.imageFriend} />
         <span tw={style.twFriendName}>{friendUsername ? friendUsername : "Not found..."}</span>
       </div>
       <span tw={style.twDate} style={style.date}>
