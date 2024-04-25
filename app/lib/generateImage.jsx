@@ -18,6 +18,7 @@ async function getPicture(url) {
   return pngArrayBuffer;
 }
 
+// Support function to get the data to compose the image
 async function getImageData(_callerUsername, _callerPropic, _friendUsername, _friendPropic) {
   // Convert null or empty string to undefined
   const callerUsername = _callerUsername || "Not found...";
@@ -84,8 +85,6 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
       ],
     }
   );
-
-  console.log("SVG generated successfully");
 
   const sharpPNG = sharp(Buffer.from(svg)).toFormat("png");
   const buffer = await sharpPNG.toBuffer();
