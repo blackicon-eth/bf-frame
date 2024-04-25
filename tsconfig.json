@@ -22,6 +22,14 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/api/image/route.ts", "app/page.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/api/image/route.ts",
+    "app/page.tsx",
+    "app/lib/generateImage.jsx"
+  ],
   "exclude": ["node_modules"]
 }
