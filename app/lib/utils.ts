@@ -161,8 +161,7 @@ export async function calculateCID(
     image: imageCid,
     name: `${callerUsername} x ${friendUsername}`,
     attributes: {
-      trait_type: "Friendship level",
-      value: parseInt(friendshipLevel),
+      "Friendship level": parseInt(friendshipLevel),
     },
   };
 
@@ -198,8 +197,7 @@ export async function pinOnPinata(
     image: imageResponse.IpfsHash,
     name: `${callerUsername} x ${friendUsername}`,
     attributes: {
-      trait_type: "Friendship level",
-      value: parseInt(friendshipLevel),
+      "Friendship level": parseInt(friendshipLevel),
     },
   };
 
