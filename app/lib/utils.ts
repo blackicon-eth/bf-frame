@@ -90,6 +90,8 @@ export async function validateMessage(
 export async function getFriend(
   callerUsername: string
 ): Promise<{ friendUsername: string; friendPropic: string; friendAddress: string; friendshipLevel: string }> {
+  console.time("getFriend Execution Time");
+
   let friendUsername = "";
   let friendPropic = "";
   let friendAddress = "";
@@ -99,15 +101,16 @@ export async function getFriend(
   if (callerUsername) {
     try {
       const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
-      console.log("response:", response.data.result);
+      console.log("\n K3L Response:\n", response.data.result, "\n");
       if (response.data.result[0]) {
         const element = response.data.result[0];
         friendUsername = element.fname.toString();
         friendAddress = element.address;
         friendshipLevel = element.score;
         const { data, error } = await fetchQuery(query, { fname: friendUsername });
+
         if (data.Socials.Social) {
-          console.log("data:", data.Socials.Social[0]);
+          console.log("Airstack Response:\n", data.Socials.Social[0], "\n");
           friendPropic = data.Socials.Social[0].profileImage;
         } else if (error) {
           console.log("error:", error);
@@ -117,6 +120,9 @@ export async function getFriend(
       console.error(error);
     }
   }
+
+  console.timeEnd("getFriend Execution Time");
+
   return { friendUsername, friendPropic, friendAddress, friendshipLevel };
 }
 
