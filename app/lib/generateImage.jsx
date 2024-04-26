@@ -7,10 +7,15 @@ import axios from "axios";
 
 // Support function to take the first frame of a GIF
 async function getPicture(url) {
-  // Get the image as an ArrayBuffer
-  const response = await axios.get(url, {
-    responseType: "arraybuffer",
-  });
+  try {
+    // Get the image as an ArrayBuffer
+    var response = await axios.get(url, {
+      responseType: "arraybuffer",
+    });
+  } catch (error) {
+    console.error("Error getting the image", error);
+    return `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`;
+  }
 
   const pngBuffer = await sharp(Buffer.from(response.data)).toFormat("png").toBuffer();
   const pngArrayBuffer = pngBuffer.buffer.slice(pngBuffer.byteOffset, pngBuffer.byteOffset + pngBuffer.byteLength);
