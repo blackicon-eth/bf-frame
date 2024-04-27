@@ -6,53 +6,51 @@ import sharp from "sharp";
 import axios from "axios";
 
 // Support function to take the first frame of a GIF
-async function getPicture(url) {
-  try {
-    // Get the image as an ArrayBuffer
-    var response = await axios.get(url, {
-      responseType: "arraybuffer",
-    });
-  } catch (error) {
-    console.error("Error getting the image", error);
-    return `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`;
+async function checkAndGetPicture(pictureUrl, username) {
+  if (pictureUrl && username) {
+    try {
+      // Get the image as an ArrayBuffer
+      var response = await axios.get(pictureUrl, {
+        responseType: "arraybuffer",
+      });
+    } catch {
+      return { buffer: `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`, found: false };
+    }
+    // Convert the image to PNG and return it as an ArrayBuffer
+    const pngBuffer = await sharp(Buffer.from(response.data)).toFormat("png").toBuffer();
+    const pngArrayBuffer = pngBuffer.buffer.slice(pngBuffer.byteOffset, pngBuffer.byteOffset + pngBuffer.byteLength);
+
+    return { buffer: pngArrayBuffer, found: true };
   }
-
-  const pngBuffer = await sharp(Buffer.from(response.data)).toFormat("png").toBuffer();
-  const pngArrayBuffer = pngBuffer.buffer.slice(pngBuffer.byteOffset, pngBuffer.byteOffset + pngBuffer.byteLength);
-
-  return pngArrayBuffer;
+  return { buffer: `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`, found: false };
 }
 
 // Support function to get the data to compose the image
 async function getImageData(_callerUsername, _callerPropic, _friendUsername, _friendPropic) {
-  // Convert null or empty string to undefined
-  const callerUsername = _callerUsername || "Not found...";
-  const friendUsername = _friendUsername || "Not found...";
-  const callerPropic =
-    _callerPropic && _callerUsername
-      ? await getPicture(_callerPropic)
-      : `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`;
-  const friendPropic =
-    _friendPropic && _friendUsername
-      ? await getPicture(_friendPropic)
-      : `${process.env.NEXT_PUBLIC_BASE_URL}/frames/not_found.png`;
+  // Get the data to compose the image
+  const callerUsername = !_callerUsername || !_callerPropic ? "Not found..." : _callerUsername;
+  const friendUsername = !_friendUsername || !_friendPropic ? "Not found..." : _friendUsername;
+  const callerPropic = await checkAndGetPicture(_callerPropic, _callerUsername);
+  const friendPropic = await checkAndGetPicture(_friendPropic, _friendUsername);
 
   // Get current date to show on the image
   const formattedDate = new Date().toLocaleDateString();
 
+  // Get the background image
   const bgImage =
-    !_callerUsername || !_friendUsername || !_callerPropic || !_friendPropic
+    !_callerUsername || !_friendUsername || !callerPropic.found || !friendPropic.found
       ? `${process.env.NEXT_PUBLIC_BASE_URL}/frames/missing.png`
-      : friendUsername == callerUsername
-      ? `${process.env.NEXT_PUBLIC_BASE_URL}/frames/yourself.png`
       : `${process.env.NEXT_PUBLIC_BASE_URL}/frames/best_friends.png`;
 
   return { formattedDate, bgImage, callerUsername, friendUsername, callerPropic, friendPropic };
 }
 
-// Loading fonts
-const gothamBoldItalic = join(process.cwd(), "public/fonts/GothamBoldItalic.ttf");
-const gothamBoldItalicData = readFileSync(gothamBoldItalic);
+// Support function to get a font
+function getFont(location) {
+  // Loading fonts
+  const font = join(process.cwd(), location);
+  return readFileSync(font);
+}
 
 export async function generateFriendImage(_callerUsername, _callerPropic, _friendUsername, _friendPropic) {
   // Getting the data in order to compose the image
@@ -68,11 +66,11 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
     <div style={style.background}>
       <img src={bgImage} style={style.bgImage} />
       <div style={style.callerContainer}>
-        <img src={callerPropic} style={style.imageFriend} />
+        <img src={callerPropic.buffer} style={style.imageFriend} />
         <span tw={style.twFriendName}>{callerUsername}</span>
       </div>
       <div style={style.friendContainer}>
-        <img src={friendPropic} style={style.imageFriend} />
+        <img src={friendPropic.buffer} style={style.imageFriend} />
         <span tw={style.twFriendName}>{friendUsername}</span>
       </div>
       <span tw={style.twDate} style={style.date}>
@@ -84,7 +82,7 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
       height: 1500,
       fonts: [
         {
-          data: gothamBoldItalicData,
+          data: getFont("public/fonts/GothamBoldItalic.ttf"),
           name: "GothamBoldItalic",
         },
       ],
