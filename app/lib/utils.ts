@@ -88,40 +88,43 @@ export async function validateMessage(
 }
 
 export async function getFriend(
-  callerUsername: string
+  callerFid: number
 ): Promise<{ friendUsername: string; friendPropic: string; friendAddress: string; friendshipLevel: string }> {
-  console.time("getFriend Execution Time");
-
   let friendUsername = "";
   let friendPropic = "";
   let friendAddress = "";
   let friendshipLevel = "";
 
   // Get friend's name and propic through API calls
-  if (callerUsername) {
+  if (callerFid) {
     try {
-      const response = await axios.post("https://graph.cast.k3l.io/links/engagement/handles?limit=1", [callerUsername]);
+      const response = await axios.post("https://graph.cast.k3l.io/links/engagement/fids?limit=25", [callerFid]);
       console.log("\n K3L Response:\n", response.data.result, "\n");
-      if (response.data.result[0]) {
-        const element = response.data.result[0];
-        friendUsername = element.fname.toString();
-        friendAddress = element.address;
-        friendshipLevel = element.score;
-        const { data, error } = await fetchQuery(query, { fname: friendUsername });
+      for (
+        let i = 0;
+        i < response.data.result.length && (!friendUsername || !friendPropic || !friendAddress || !friendshipLevel);
+        i++
+      ) {
+        const friend = response.data.result[i];
+        if (friend.fid != callerFid) {
+          friendUsername = friend.fname.toString();
+          friendAddress = friend.address;
+          friendshipLevel = friend.score;
 
-        if (data.Socials.Social) {
-          console.log("Airstack Response:\n", data.Socials.Social[0], "\n");
-          friendPropic = data.Socials.Social[0].profileImage;
-        } else if (error) {
-          console.log("error:", error);
+          const { data, error } = await fetchQuery(query, { fname: friendUsername });
+
+          if (data.Socials.Social) {
+            console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
+            friendPropic = data.Socials.Social[0].profileImage;
+          } else if (error) {
+            console.log("error:", error);
+          }
         }
       }
     } catch (error) {
       console.error(error);
     }
   }
-
-  console.timeEnd("getFriend Execution Time");
 
   return { friendUsername, friendPropic, friendAddress, friendshipLevel };
 }
@@ -160,10 +163,7 @@ export async function calculateCID(
   const imageCid = await Hash.of(imageBuffer);
 
   const json = {
-    description:
-      friendUsername == callerUsername
-        ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
-        : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+    description: `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
     image: imageCid,
     name: `${callerUsername} x ${friendUsername}`,
     attributes: {
@@ -196,10 +196,7 @@ export async function pinOnPinata(
   });
 
   const json = {
-    description:
-      friendUsername == callerUsername
-        ? `As strange as it may seem, it looks like that ${callerUsername}'s best friend is himself/herself`
-        : `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+    description: `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
     image: imageResponse.IpfsHash,
     name: `${callerUsername} x ${friendUsername}`,
     attributes: {
