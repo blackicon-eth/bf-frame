@@ -15,10 +15,11 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return getInvalidFidFrame();
   }
 
-  // Getting caller username and caller propic from the frame message
-  const callerUsername = frameMessage?.requesterUserData?.username ?? "";
-  const callerPropic = frameMessage?.requesterUserData?.profileImage ?? "";
-  const callerAddress = frameMessage?.requesterVerifiedAddresses[0] ?? "";
+  // Getting caller info from the frame message
+  const callerUsername = frameMessage.requesterUserData?.username ?? "";
+  const callerPropic = frameMessage.requesterUserData?.profileImage ?? "";
+  const callerAddress = frameMessage.requesterVerifiedAddresses[0] ?? "";
+  const callerFid = frameMessage.requesterFid ?? "";
 
   // Getting caller's friend username and friend propic
   const {
@@ -27,19 +28,17 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     friendAddress,
     friendshipLevel,
   }: { friendUsername: string; friendPropic: string; friendAddress: string; friendshipLevel: string } = await getFriend(
-    callerUsername
+    callerFid
   );
 
   // Will be removed
-  console.log("Frame caller username: ", callerUsername);
-  console.log("Frame caller profile image: ", callerPropic);
-  console.log("Frame caller address: ", callerAddress);
-  console.log("Friend username: ", friendUsername);
-  console.log("Friend propic: ", friendPropic);
-  console.log("Friend address: ", friendAddress);
-  console.log("Friendship level: ", friendshipLevel);
-
-  //await nftStorageStoreAsset(); // This one is to store on nft.storage
+  // console.log("Frame caller username: ", callerUsername);
+  // console.log("Frame caller profile image: ", callerPropic);
+  // console.log("Frame caller address: ", callerAddress);
+  // console.log("Friend username: ", friendUsername);
+  // console.log("Friend propic: ", friendPropic);
+  // console.log("Friend address: ", friendAddress);
+  // console.log("Friendship level: ", friendshipLevel);
 
   // Creating the frame
   const frame = getFrameHtmlResponse({
