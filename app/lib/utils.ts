@@ -106,8 +106,8 @@ export async function getFriend(
         i++
       ) {
         const friend = response.data.result[i];
-        if (friend.fid != callerFid) {
-          friendUsername = friend.fname.toString();
+        if (friend.fid && friend.fid != callerFid && friend.fname && friend.address && friend.score) {
+          friendUsername = friend.fname;
           friendAddress = friend.address;
           friendshipLevel = friend.score;
 
