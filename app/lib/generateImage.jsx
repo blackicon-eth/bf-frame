@@ -5,6 +5,10 @@ import * as style from "./style_components/styles";
 import sharp from "sharp";
 import axios from "axios";
 
+// Load the font
+const font = join(process.cwd(), "public/fonts/GothamBoldItalic.ttf");
+const GothamBoldItalicBuffer = readFileSync(font);
+
 // Support function to take the first frame of a GIF
 async function checkAndGetPicture(pictureUrl, username) {
   if (pictureUrl && username) {
@@ -45,13 +49,6 @@ async function getImageData(_callerUsername, _callerPropic, _friendUsername, _fr
   return { formattedDate, bgImage, callerUsername, friendUsername, callerPropic, friendPropic };
 }
 
-// Support function to get a font
-function getFont(location) {
-  // Loading fonts
-  const font = join(process.cwd(), location);
-  return readFileSync(font);
-}
-
 export async function generateFriendImage(_callerUsername, _callerPropic, _friendUsername, _friendPropic) {
   // Getting the data in order to compose the image
   const { formattedDate, bgImage, callerUsername, friendUsername, callerPropic, friendPropic } = await getImageData(
@@ -82,7 +79,7 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
       height: 1500,
       fonts: [
         {
-          data: getFont("/public/fonts/GothamBoldItalic.ttf"),
+          data: GothamBoldItalicBuffer,
           name: "GothamBoldItalic",
         },
       ],
