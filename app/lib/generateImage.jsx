@@ -82,7 +82,7 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
       height: 1500,
       fonts: [
         {
-          data: getFont("public/fonts/GothamBoldItalic.ttf"),
+          data: getFont("/public/fonts/GothamBoldItalic.ttf"),
           name: "GothamBoldItalic",
         },
       ],
