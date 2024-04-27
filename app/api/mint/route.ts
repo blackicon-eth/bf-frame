@@ -20,6 +20,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const friendPropic = req.nextUrl.searchParams.get("friendPropic")!;
   const friendshipLevel = req.nextUrl.searchParams.get("friendshipLevel")!;
 
+  // Generating the image and calculating the CID from it
   const imageBuffer = await generateFriendImage(callerUsername, callerPropic, friendUsername, friendPropic);
   const { imageCid, jsonCid } = await calculateCID(imageBuffer, friendUsername, callerUsername, friendshipLevel);
 
@@ -54,14 +55,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     method: "eth_sendTransaction",
     params: {
       abi: FarcasterBestFriendsABI as Abi,
-      to: BFF_ADDRESS, // The contract address deployed on Base Sepolia
+      to: BFF_ADDRESS, // The contract address deployed on Base
       data: data,
       value: "0",
     },
   };
 
   //console.log("\nTx created: ", tx, "\n");
-  console.log("Signature: ", signature as Address);
+  //console.log("Signature: ", signature as Address);
 
   return NextResponse.json(tx);
 }
