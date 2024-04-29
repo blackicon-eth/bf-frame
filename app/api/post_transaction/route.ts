@@ -43,7 +43,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       {
         label: "See transaction",
         action: "link",
-        target: `https://basescan.org/tx/${frameMessage.transactionId}`,
+        target: `https://base-sepolia.blockscout.com/tx/${frameMessage.transactionId}`,
       },
       {
         label: "Share",

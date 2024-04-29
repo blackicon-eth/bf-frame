@@ -2,7 +2,7 @@ import { FrameActionDataParsedAndHubContext, getFrameMessage } from "frames.js";
 import { Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
-import { base } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import { init, fetchQuery } from "@airstack/node";
 import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
 import axios from "axios";
@@ -36,7 +36,7 @@ const query = `query GetPropicsQuery($fname: String) {
 
 export async function approve(uri: string, minter: Address, friend: Address) {
   const voucher = { uri, minter, friend };
-  const chainId = base.id;
+  const chainId = baseSepolia.id;
 
   const types = {
     Voucher: [
