@@ -16,8 +16,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return getInvalidFidFrame();
   }
 
-  console.log("Frame message: ", frameMessage);
-
   // Getting the number on mints from the nextUrl
   const callerUsername = req.nextUrl.searchParams.get("callerUsername")!;
   const callerPropic = req.nextUrl.searchParams.get("callerPropic")!;
