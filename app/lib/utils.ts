@@ -2,8 +2,7 @@ import { FrameActionDataParsedAndHubContext, getFrameMessage } from "frames.js";
 import { Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
-import { baseSepolia } from "viem/chains";
-import { NFTStorage, File } from "nft.storage";
+import { base } from "viem/chains";
 import { init, fetchQuery } from "@airstack/node";
 import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
 import axios from "axios";
@@ -37,7 +36,7 @@ const query = `query GetPropicsQuery($fname: String) {
 
 export async function approve(uri: string, minter: Address, friend: Address) {
   const voucher = { uri, minter, friend };
-  const chainId = baseSepolia.id;
+  const chainId = base.id;
 
   const types = {
     Voucher: [

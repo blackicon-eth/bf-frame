@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Abi, Address, encodeFunctionData } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { FarcasterBestFriendsABI } from "@/app/lib/abi/FarcasterBestFriendsABI";
 import { BFF_ADDRESS } from "@/app/lib/constants/constants";
 import { approve, calculateCID, validateMessage } from "@/app/lib/utils";
@@ -51,7 +51,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
 
   // Building the transaction as a FrameTransactionResponse
   const tx: FrameTransactionResponse = {
-    chainId: `eip155:${baseSepolia.id}`,
+    chainId: `eip155:${base.id}`,
     method: "eth_sendTransaction",
     params: {
       abi: FarcasterBestFriendsABI as Abi,
