@@ -89,11 +89,5 @@ export async function generateFriendImage(_callerUsername, _callerPropic, _frien
   const sharpPNG = sharp(Buffer.from(svg)).toFormat("png");
   const buffer = await sharpPNG.toBuffer();
 
-  // Save the image to the file system if we are running locally
-  if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.includes("localhost")) {
-    const outputPath = join(process.cwd(), "public/test.png");
-    await sharpPNG.toFile(outputPath);
-  }
-
   return buffer;
 }
