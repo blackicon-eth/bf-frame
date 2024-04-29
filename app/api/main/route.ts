@@ -31,15 +31,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     callerFid
   );
 
-  // Some logs for debugging
-  // console.log("Frame caller username: ", callerUsername);
-  // console.log("Frame caller profile image: ", callerPropic);
-  // console.log("Frame caller address: ", callerAddress);
-  // console.log("Friend username: ", friendUsername);
-  // console.log("Friend propic: ", friendPropic);
-  // console.log("Friend address: ", friendAddress);
-  // console.log("Friendship level: ", friendshipLevel);
-
   // Creating the frame
   const frame = getFrameHtmlResponse({
     buttons:
