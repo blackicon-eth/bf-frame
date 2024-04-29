@@ -129,31 +129,6 @@ export async function getFriend(
   return { friendUsername, friendPropic, friendAddress, friendshipLevel };
 }
 
-export async function nftStorageStoreAsset() {
-  const API_KEY = process.env.NFT_STORAGE_API_KEY!;
-
-  console.log("API_KEY:", API_KEY);
-
-  try {
-    var client = new NFTStorage({ token: API_KEY });
-  } catch (err: any) {
-    console.log("Failed to create NFTStorage client with error: ", err.message);
-    return;
-  }
-
-  try {
-    const metadata = await client.store({
-      name: "TEST NFT",
-      description: "My TEST NFT!",
-      image: new File([await fs.promises.readFile("public/frames/test.png")], "test.png", { type: "image/png" }),
-    });
-    console.log("Metadata stored on Filecoin and IPFS with URL:", metadata.url);
-  } catch (err: any) {
-    console.log("Failed to store metadata with error: ", err.message);
-    return;
-  }
-}
-
 export async function calculateCID(
   imageBuffer: Buffer,
   friendUsername: string,
