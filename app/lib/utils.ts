@@ -194,7 +194,5 @@ export async function countPinataPins() {
       count += 1;
     }
   }
-
-  console.log("Total pinned items: ", count);
   return count;
 }
