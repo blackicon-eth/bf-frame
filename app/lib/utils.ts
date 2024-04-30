@@ -103,7 +103,7 @@ export async function getFriend(
           const { data, error } = await fetchQuery(getUserInfoQuery, { fid: friend.fid.toString() });
 
           if (data.Socials.Social) {
-            console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
+            //console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
             friendPropic = data.Socials.Social[0].profileImage;
             friendAddress = data.Socials.Social[0].connectedAddresses[0].address ?? friend.address;
           } else if (error) {
