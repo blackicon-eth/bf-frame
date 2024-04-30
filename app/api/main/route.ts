@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
 import { FrameActionDataParsedAndHubContext } from "frames.js";
 import { getInvalidFidFrame } from "@/app/lib/getFrame";
-import { getFriend, validateMessage } from "@/app/lib/utils";
+import { countPinataPins, getFriend, validateMessage } from "@/app/lib/utils";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the user data and validating it
@@ -13,6 +13,10 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     await validateMessage(data);
   if (!isValid || !frameMessage) {
     return getInvalidFidFrame();
+  }
+
+  if ((await countPinataPins()) >= 475) {
+    return getPinataLimitFrame();
   }
 
   // Getting caller info from the frame message
