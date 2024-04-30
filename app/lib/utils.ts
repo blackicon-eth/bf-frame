@@ -79,8 +79,8 @@ export async function validateMessage(
     }
   );
 
-  // If the base url is not set or is not localhost, we need to validate the frame message
-  if (!process.env.NEXT_PUBLIC_BASE_URL!.includes("localhost") && (!frameMessage || !frameMessage.isValid)) {
+  // Check if the frame message is valid
+  if (!frameMessage || !frameMessage.isValid) {
     return { frameMessage: undefined, isValid: false };
   }
   return { frameMessage: frameMessage, isValid: true };
