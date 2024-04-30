@@ -6,29 +6,20 @@ import { base } from "viem/chains";
 import { init, fetchQuery } from "@airstack/node";
 import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
 import axios from "axios";
-import fs from "fs";
 // @ts-ignore
 import Hash from "ipfs-only-hash";
 import { Readable } from "stream";
 
 init(process.env.AIRSTACK_KEY!);
 
-const query = `query GetPropicsQuery($fname: String) {
+const getUserInfoQuery = `query GetUserInfo($fid: String) {
   Socials(
-    input: {
-      filter: {
-        profileName: { _eq: $fname }
-        dappName: { _eq: farcaster }
-      }
-      blockchain: ethereum
-    }
+    input: {filter: {userId: {_eq: $fid}, dappName: {_eq: farcaster}}, blockchain: ethereum}
   ) {
     Social {
       profileImage
-      profileImageContentValue {
-        image {
-          small
-        }
+      connectedAddresses {
+        address
       }
     }
   }
@@ -79,8 +70,8 @@ export async function validateMessage(
     }
   );
 
-  // Check if the frame message is valid
-  if (!frameMessage || !frameMessage.isValid) {
+  // If the base url is not set or is not localhost, we need to validate the frame message
+  if (!process.env.NEXT_PUBLIC_BASE_URL!.includes("localhost") && (!frameMessage || !frameMessage.isValid)) {
     return { frameMessage: undefined, isValid: false };
   }
   return { frameMessage: frameMessage, isValid: true };
@@ -98,7 +89,7 @@ export async function getFriend(
   if (callerFid) {
     try {
       const response = await axios.post("https://graph.cast.k3l.io/links/engagement/fids?limit=25", [callerFid]);
-      console.log("\n K3L Response:\n", response.data.result, "\n");
+      //console.log("\n K3L Response:\n", response.data.result, "\n");
       for (
         let i = 0;
         i < response.data.result.length && (!friendUsername || !friendPropic || !friendAddress || !friendshipLevel);
@@ -107,14 +98,14 @@ export async function getFriend(
         const friend = response.data.result[i];
         if (friend.fid && friend.fid != callerFid && friend.fname && friend.address && friend.score) {
           friendUsername = friend.fname;
-          friendAddress = friend.address;
           friendshipLevel = friend.score;
 
-          const { data, error } = await fetchQuery(query, { fname: friendUsername });
+          const { data, error } = await fetchQuery(getUserInfoQuery, { fid: friend.fid.toString() });
 
           if (data.Socials.Social) {
             console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
             friendPropic = data.Socials.Social[0].profileImage;
+            friendAddress = data.Socials.Social[0].connectedAddresses[0].address ?? friend.address;
           } else if (error) {
             console.log("error:", error);
           }
