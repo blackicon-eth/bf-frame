@@ -4,7 +4,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
 import { baseSepolia } from "viem/chains";
 import { init, fetchQuery } from "@airstack/node";
-import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
+import pinataSDK, { PinataPin, PinataPinResponse } from "@pinata/sdk";
 import axios from "axios";
 // @ts-ignore
 import Hash from "ipfs-only-hash";
@@ -176,4 +176,25 @@ export async function pinOnPinata(
   });
 
   return { imageResponse, jsonResponse };
+}
+
+export async function countPinataPins() {
+  const pinata = new pinataSDK({
+    pinataApiKey: process.env.PINATA_API_KEY,
+    pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
+  });
+
+  const isPinataPin = (obj: any): obj is PinataPin => {
+    return obj && obj.date_unpinned !== undefined;
+  };
+
+  var count = 0;
+  for await (const item of pinata.getFilesByCount({})) {
+    if (isPinataPin(item) && !item.date_unpinned) {
+      count += 1;
+    }
+  }
+
+  console.log("Total pinned items: ", count);
+  return count;
 }
