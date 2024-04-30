@@ -105,7 +105,7 @@ export async function getFriend(
           if (data.Socials.Social) {
             console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
             friendPropic = data.Socials.Social[0].profileImage;
-            friendAddress = data.Socials.Social[0].connectedAddresses[0].address;
+            friendAddress = data.Socials.Social[0].connectedAddresses[0].address ?? friend.address;
           } else if (error) {
             console.log("error:", error);
           }
