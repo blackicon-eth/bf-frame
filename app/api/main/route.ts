@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
 import { FrameActionDataParsedAndHubContext } from "frames.js";
-import { getInvalidFidFrame } from "@/app/lib/getFrame";
+import { getInvalidFidFrame, getPinataLimitFrame } from "@/app/lib/getFrame";
 import { countPinataPins, getFriend, validateMessage } from "@/app/lib/utils";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
