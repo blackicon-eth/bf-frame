@@ -1,6 +1,6 @@
-## BFF - Best Friend Frame
+## Farcaster Best Friend Frame
 
-A farcaster frame that lets you find the person you engaged the most with and mint an NFT representing your friendship.
+A Farcaster frame that lets you find the person you engaged the most on the platform and mint an NFT representing your friendship.
 You can mint the NFT for yourself only or for your friend too!
 
 # Tech used
