@@ -215,9 +215,7 @@ export async function pinOnPinata(
 }
 
 export async function getPinCount() {
-  const result = (await sql`SELECT count FROM pinata_pins`).rows[0].count;
-  console.log("Current pin count: ", result);
-  return result;
+  return (await sql`SELECT count FROM pinata_pins`).rows[0].count;
 }
 
 export async function increasePinCount(amount: number) {
