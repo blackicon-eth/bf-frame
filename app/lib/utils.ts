@@ -145,7 +145,7 @@ export async function pinOnPinata(
   friendUsername: string,
   callerUsername: string,
   friendshipLevel: string
-): Promise<{ imageResponse: PinataPinResponse; jsonResponse: PinataPinResponse }> {
+): Promise<{ imageResponse: PinataPinResponse | null; jsonResponse: PinataPinResponse | null }> {
   const pinata = new pinataSDK({
     pinataApiKey: process.env.PINATA_API_KEY,
     pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
@@ -154,26 +154,46 @@ export async function pinOnPinata(
   const stream = new Readable();
   stream.push(imageBuffer);
   stream.push(null);
-  const imageResponse = await pinata.pinFileToIPFS(stream, {
-    pinataMetadata: {
-      name: `${callerUsername} x ${friendUsername} image`,
-    },
-  });
 
-  const json = {
-    description: `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
-    image: imageResponse.IpfsHash,
-    name: `${callerUsername} x ${friendUsername}`,
-    attributes: {
-      "Friendship level": parseInt(friendshipLevel),
-    },
-  };
+  // setting up variables for retries
+  var retries = 0;
+  var imageResponse = null;
+  var jsonResponse = null;
 
-  const jsonResponse = await pinata.pinJSONToIPFS(json, {
-    pinataMetadata: {
-      name: `${callerUsername} x ${friendUsername} json`,
-    },
-  });
+  // there's a while loop to retry pinning the image and json in case of failure
+  // max retries is 5 each
+  while (retries < 5 && (!imageResponse || !jsonResponse)) {
+    try {
+      if (!imageResponse) {
+        imageResponse = await pinata.pinFileToIPFS(stream, {
+          pinataMetadata: {
+            name: `${callerUsername} x ${friendUsername} image`,
+          },
+        });
+        if (retries > 0) retries = 0;
+      }
+
+      if (!jsonResponse) {
+        const json = {
+          description: `This NFT represents ${callerUsername} and ${friendUsername}'s friendship`,
+          image: imageResponse.IpfsHash,
+          name: `${callerUsername} x ${friendUsername}`,
+          attributes: {
+            "Friendship level": parseInt(friendshipLevel),
+          },
+        };
+
+        jsonResponse = await pinata.pinJSONToIPFS(json, {
+          pinataMetadata: {
+            name: `${callerUsername} x ${friendUsername} json`,
+          },
+        });
+      }
+    } catch (error) {
+      console.error(`Error pinning something on Pinata on try #${retries}, error:\n`, error);
+      retries += 1;
+    }
+  }
 
   return { imageResponse, jsonResponse };
 }
