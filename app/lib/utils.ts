@@ -20,6 +20,7 @@ const getUserInfoQuery = `query GetUserInfo($fid: String) {
       profileImage
       connectedAddresses {
         address
+        blockchain
       }
     }
   }
@@ -96,6 +97,7 @@ export async function getFriend(
         i++
       ) {
         const friend = response.data.result[i];
+        console.log(`\nFriend #${i}: `, friend);
         if (friend.fid && friend.fid != callerFid && (friend.fname || friend.username) && friend.address && friend.score) {
           friendUsername = friend.username ?? friend.fname; // Username is preferred over fname
           friendshipLevel = friend.score;
@@ -104,8 +106,17 @@ export async function getFriend(
 
           if (data.Socials.Social) {
             //console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
+
             friendPropic = data.Socials.Social[0].profileImage;
-            friendAddress = data.Socials.Social[0].connectedAddresses[0].address ?? friend.address; // Validated address is preferred over farcaster address
+            friendAddress = friend.address; // Initialize with the address from K3L
+
+            // Then a loop to get the first ethereum address, if array is not empty
+            for (let i = 0; i < data.Socials.Social[0].connectedAddresses.length; i++) {
+              if (data.Socials.Social[0].connectedAddresses[i].blockchain === "ethereum") {
+                friendAddress = data.Socials.Social[0].connectedAddresses[i].address;
+                break;
+              }
+            }
           } else if (error) {
             console.log("error:", error);
           }
@@ -163,6 +174,12 @@ export async function pinOnPinata(
   // there's a while loop to retry pinning the image and json in case of failure
   // max retries is 5 each
   while (retries < 5 && (!imageResponse || !jsonResponse)) {
+    console.log(`\nTry #${retries}`);
+    console.log(
+      `Current state is imageResponse: ${imageResponse ? imageResponse.IpfsHash : "null"}, jsonResponse: ${
+        jsonResponse ? jsonResponse.IpfsHash : "null"
+      }\n`
+    );
     try {
       if (!imageResponse) {
         imageResponse = await pinata.pinFileToIPFS(stream, {
