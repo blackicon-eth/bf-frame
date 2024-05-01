@@ -47,7 +47,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
       {
         label: "Tip creator",
         action: "link",
-        target: "https://warpcast.com/blackicon.eth/0xe360f267",
+        target: "https://warpcast.com/blackicon.eth/0xeec9675e",
       },
     ],
     image: {
