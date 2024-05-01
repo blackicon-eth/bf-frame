@@ -16,13 +16,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   }
 
   if ((await countPinataPins()) >= 475) {
+    console.error("Pinata limit reached");
     return getPinataLimitFrame();
   }
 
   // Getting caller info from the frame message
   const callerUsername = frameMessage.requesterUserData?.username ?? "";
   const callerPropic = frameMessage.requesterUserData?.profileImage ?? "";
-  const callerAddress = frameMessage.requesterVerifiedAddresses[0] ?? "";
+  const callerAddress = frameMessage.requesterVerifiedAddresses[0] ?? frameMessage.requesterCustodyAddress ?? ""; // Validated address is preferred over custody address
   const callerFid = frameMessage.requesterFid ?? "";
 
   // Getting caller's friend username and friend propic
