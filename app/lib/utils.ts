@@ -169,18 +169,13 @@ export async function pinOnPinata(
 
   // setting up variables for retries
   var retries = 0;
+  var pinCount = 0;
   var imageResponse = null;
   var jsonResponse = null;
 
   // there's a while loop to retry pinning the image and json in case of failure
   // max retries is 5 each
   while (retries < 5 && (!imageResponse || !jsonResponse)) {
-    console.log(`\nTry #${retries}`);
-    console.log(
-      `Current state is imageResponse: ${imageResponse ? imageResponse.IpfsHash : "null"}, jsonResponse: ${
-        jsonResponse ? jsonResponse.IpfsHash : "null"
-      }\n`
-    );
     try {
       if (!imageResponse) {
         imageResponse = await pinata.pinFileToIPFS(stream, {
@@ -188,9 +183,9 @@ export async function pinOnPinata(
             name: `${callerUsername} x ${friendUsername} image`,
           },
         });
-        // if imageResponse is successful, reset retries and increase pin count
+        // if imageResponse is successful, reset retries and increase counter to update pin count
         if (retries > 0) retries = 0;
-        await increasePinCount();
+        pinCount += 1;
       }
 
       if (!jsonResponse) {
@@ -208,15 +203,15 @@ export async function pinOnPinata(
             name: `${callerUsername} x ${friendUsername} json`,
           },
         });
-        // if jsonResponse is successful, increase pin count
-        await increasePinCount();
+        // if jsonResponse is successful, increase counter to update pin count
+        pinCount += 1;
       }
     } catch (error) {
       console.error(`Error pinning something on Pinata on try #${retries}, error:\n`, error);
       retries += 1;
     }
   }
-
+  await increasePinCount(pinCount);
   return { imageResponse, jsonResponse };
 }
 
@@ -229,11 +224,11 @@ export async function getPinCount() {
   return (await pool.sql`SELECT count FROM pinata_pins`).rows[0].count;
 }
 
-export async function increasePinCount() {
+export async function increasePinCount(amount: number) {
   const pooledConnectionString = postgresConnectionString("pool");
   const pool = createPool({
     connectionString: pooledConnectionString,
   });
 
-  return await pool.sql`UPDATE pinata_pins SET count = count + 1`;
+  await pool.sql`UPDATE pinata_pins SET count = count + ${amount}`;
 }
