@@ -15,12 +15,14 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return getInvalidFidFrame();
   }
 
+  console.time("pinata check");
   if ((await countPinataPins()) >= 475) {
     console.error("Pinata limit reached!");
     return getPinataLimitFrame();
   }
+  console.timeEnd("pinata check");
 
-  //console.log("Frame message: ", frameMessage);
+  console.log("\nFrame message: ", frameMessage, "\n");
 
   // Getting caller info from the frame message
   const callerUsername = frameMessage.requesterUserData?.username ?? "";
@@ -39,13 +41,13 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   );
 
   // Some logs for debugging
-  // console.log("Frame caller username: ", callerUsername);
-  // console.log("Frame caller profile image: ", callerPropic);
-  // console.log("Frame caller address: ", callerAddress);
-  // console.log("Friend username: ", friendUsername);
-  // console.log("Friend propic: ", friendPropic);
-  // console.log("Friend address: ", friendAddress);
-  // console.log("Friendship level: ", friendshipLevel);
+  console.log("\nFrame caller username: ", callerUsername);
+  console.log("Frame caller profile image: ", callerPropic);
+  console.log("Frame caller address: ", callerAddress);
+  console.log("Friend username: ", friendUsername);
+  console.log("Friend propic: ", friendPropic);
+  console.log("Friend address: ", friendAddress);
+  console.log("Friendship level: ", friendshipLevel, "\n");
 
   // Creating the frame
   const frame = getFrameHtmlResponse({
