@@ -176,6 +176,12 @@ export async function pinOnPinata(
   // there's a while loop to retry pinning the image and json in case of failure
   // max retries is 5 each
   while (retries < 5 && (!imageResponse || !jsonResponse)) {
+    console.log(`\nTry #${retries}`);
+    console.log(
+      `Current state is imageResponse: ${imageResponse ? imageResponse.IpfsHash : "null"}, jsonResponse: ${
+        jsonResponse ? jsonResponse.IpfsHash : "null"
+      }\n`
+    );
     try {
       if (!imageResponse) {
         imageResponse = await pinata.pinFileToIPFS(stream, {
