@@ -4,7 +4,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./constants/constants";
 import { baseSepolia } from "viem/chains";
 import { init, fetchQuery } from "@airstack/node";
-import pinataSDK, { PinataPin, PinataPinResponse } from "@pinata/sdk";
+import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
+import { createPool, postgresConnectionString } from "@vercel/postgres";
 import axios from "axios";
 // @ts-ignore
 import Hash from "ipfs-only-hash";
@@ -187,7 +188,9 @@ export async function pinOnPinata(
             name: `${callerUsername} x ${friendUsername} image`,
           },
         });
+        // if imageResponse is successful, reset retries and increase pin count
         if (retries > 0) retries = 0;
+        await increasePinCount();
       }
 
       if (!jsonResponse) {
@@ -205,6 +208,8 @@ export async function pinOnPinata(
             name: `${callerUsername} x ${friendUsername} json`,
           },
         });
+        // if jsonResponse is successful, increase pin count
+        await increasePinCount();
       }
     } catch (error) {
       console.error(`Error pinning something on Pinata on try #${retries}, error:\n`, error);
@@ -215,21 +220,20 @@ export async function pinOnPinata(
   return { imageResponse, jsonResponse };
 }
 
-export async function countPinataPins() {
-  const pinata = new pinataSDK({
-    pinataApiKey: process.env.PINATA_API_KEY,
-    pinataSecretApiKey: process.env.PINATA_SECRET_KEY,
+export async function getPinCount() {
+  const pooledConnectionString = postgresConnectionString("pool");
+  const pool = createPool({
+    connectionString: pooledConnectionString,
   });
 
-  const isPinataPin = (obj: any): obj is PinataPin => {
-    return obj && obj.date_unpinned !== undefined;
-  };
+  return (await pool.sql`SELECT count FROM pinata_pins`).rows[0].count;
+}
 
-  var count = 0;
-  for await (const item of pinata.getFilesByCount({})) {
-    if (isPinataPin(item) && !item.date_unpinned) {
-      count += 1;
-    }
-  }
-  return count;
+export async function increasePinCount() {
+  const pooledConnectionString = postgresConnectionString("pool");
+  const pool = createPool({
+    connectionString: pooledConnectionString,
+  });
+
+  return await pool.sql`UPDATE pinata_pins SET count = count + 1`;
 }

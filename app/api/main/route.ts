@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFrameHtmlResponse } from "@coinbase/onchainkit";
 import { FrameActionDataParsedAndHubContext } from "frames.js";
-import { getInvalidFidFrame, getPinataLimitFrame } from "@/app/lib/getFrame";
-import { countPinataPins, getFriend, validateMessage } from "@/app/lib/utils";
+import { getInvalidFidFrame, getPinLimitFrame } from "@/app/lib/getFrame";
+import { getFriend, getPinCount, validateMessage } from "@/app/lib/utils";
 
 async function getResponse(req: NextRequest): Promise<NextResponse> {
   // Getting the user data and validating it
@@ -15,12 +15,9 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     return getInvalidFidFrame();
   }
 
-  console.time("pinata check");
-  if ((await countPinataPins()) >= 475) {
-    console.error("Pinata limit reached!");
-    return getPinataLimitFrame();
+  if ((await getPinCount()) >= 475) {
+    return getPinLimitFrame();
   }
-  console.timeEnd("pinata check");
 
   console.log("\nFrame message: ", frameMessage, "\n");
 

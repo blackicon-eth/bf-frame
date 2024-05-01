@@ -27,15 +27,10 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
 
   const imageBuffer = await generateFriendImage(callerUsername, callerPropic, friendUsername, friendPropic);
 
-  // Call pinOnPinata without waiting for it to end
-  pinOnPinata(imageBuffer, friendUsername, callerUsername, friendshipLevel)
-    .then(({ imageResponse, jsonResponse }) => {
-      console.log("Pinned image: ", imageResponse);
-      console.log("Pinned json: ", jsonResponse);
-    })
-    .catch((error) => {
-      console.error("Error pinning on Pinata: ", error);
-    });
+  // Call pinOnPinata function to pin the image and json on Pinata
+  const { imageResponse, jsonResponse } = await pinOnPinata(imageBuffer, friendUsername, callerUsername, friendshipLevel);
+  console.log("Pinned image: ", imageResponse);
+  console.log("Pinned json: ", jsonResponse);
 
   // Creating the frame
   const frame = getFrameHtmlResponse({

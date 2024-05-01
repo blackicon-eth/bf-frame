@@ -16,7 +16,7 @@ export function getInvalidFidFrame(): NextResponse {
   return new NextResponse(frame);
 }
 
-export function getPinataLimitFrame(): NextResponse {
+export function getPinLimitFrame(): NextResponse {
   const frame = getFrameHtmlResponse({
     buttons: [
       {
