@@ -96,8 +96,8 @@ export async function getFriend(
         i++
       ) {
         const friend = response.data.result[i];
-        if (friend.fid && friend.fid != callerFid && friend.fname && friend.address && friend.score) {
-          friendUsername = friend.fname;
+        if (friend.fid && friend.fid != callerFid && (friend.fname || friend.username) && friend.address && friend.score) {
+          friendUsername = friend.username ?? friend.fname; // Username is preferred over fname
           friendshipLevel = friend.score;
 
           const { data, error } = await fetchQuery(getUserInfoQuery, { fid: friend.fid.toString() });
@@ -105,7 +105,7 @@ export async function getFriend(
           if (data.Socials.Social) {
             //console.log("\nAirstack Response:\n", data.Socials.Social[0], "\n");
             friendPropic = data.Socials.Social[0].profileImage;
-            friendAddress = data.Socials.Social[0].connectedAddresses[0].address ?? friend.address;
+            friendAddress = data.Socials.Social[0].connectedAddresses[0].address ?? friend.address; // Validated address is preferred over farcaster address
           } else if (error) {
             console.log("error:", error);
           }
