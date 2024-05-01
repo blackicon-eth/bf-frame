@@ -25,7 +25,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
   const callerAddress = frameMessage.requesterVerifiedAddresses[0] ?? "";
   const callerFid = frameMessage.requesterFid ?? "";
 
-  // Getting caller's friend username and friend propic
+  // Getting caller's friend info
   const {
     friendUsername,
     friendPropic,
