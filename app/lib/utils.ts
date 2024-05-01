@@ -5,11 +5,11 @@ import { BFF_ADDRESS, SIGNING_DOMAIN_NAME, SIGNING_DOMAIN_VERSION } from "./cons
 import { base } from "viem/chains";
 import { init, fetchQuery } from "@airstack/node";
 import pinataSDK, { PinataPinResponse } from "@pinata/sdk";
-import { createPool, postgresConnectionString } from "@vercel/postgres";
+import { sql } from "@vercel/postgres";
+import { Readable } from "stream";
 import axios from "axios";
 // @ts-ignore
 import Hash from "ipfs-only-hash";
-import { Readable } from "stream";
 
 init(process.env.AIRSTACK_KEY!);
 
@@ -215,19 +215,9 @@ export async function pinOnPinata(
 }
 
 export async function getPinCount() {
-  const pooledConnectionString = postgresConnectionString("pool");
-  const pool = createPool({
-    connectionString: pooledConnectionString,
-  });
-
-  return (await pool.sql`SELECT count FROM pinata_pins`).rows[0].count;
+  return (await sql`SELECT count FROM pinata_pins`).rows[0].count;
 }
 
 export async function increasePinCount(amount: number) {
-  const pooledConnectionString = postgresConnectionString("pool");
-  const pool = createPool({
-    connectionString: pooledConnectionString,
-  });
-
-  await pool.sql`UPDATE pinata_pins SET count = count + ${amount}`;
+  await sql`UPDATE pinata_pins SET count = count + ${amount}`;
 }
