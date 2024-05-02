@@ -54,6 +54,12 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
               target: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mint?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}&callerAddress=${callerAddress}&friendAddress=${friendAddress}`,
               postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/post_transaction?callerUsername=${callerUsername}&callerPropic=${callerPropic}&friendUsername=${friendUsername}&friendPropic=${friendPropic}&friendshipLevel=${friendshipLevel}`,
             },
+            {
+              label: "Share it!",
+              action: "link",
+              target:
+                "https://warpcast.com/~/compose?text=Find%20your%20farcaster%20best%20friend!%0A%0Ahttps://bf-frame.vercel.app/",
+            },
           ]
         : [
             {
