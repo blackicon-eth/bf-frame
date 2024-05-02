@@ -41,7 +41,7 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
         target: `https://base-sepolia.blockscout.com/tx/${frameMessage.transactionId}`,
       },
       {
-        label: "Share",
+        label: "Share it!",
         action: "link",
         target:
           "https://warpcast.com/~/compose?text=Find%20your%20farcaster%20best%20friend!%0A%0Ahttps://bf-frame.vercel.app/",
